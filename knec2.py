@@ -84,8 +84,6 @@ if os.environ.get('RENDER') and RENDER_DISK.exists() and os.access(str(RENDER_DI
     DB_PATH = str(RENDER_DISK / 'kenya_exam_hub.db')
     UPLOAD_DIR = RENDER_DISK / 'uploads'
 else:
-    if os.environ.get('RENDER'):
-        log.warning('RENDER is set but /var/data not writable — using ephemeral storage')
     DB_PATH = _env('DB_PATH', required=False, default=str(BASE_DIR / 'kenya_exam_hub.db'))
     UPLOAD_DIR = BASE_DIR / 'uploads'
 
