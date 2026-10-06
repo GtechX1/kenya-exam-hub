@@ -79,10 +79,13 @@ SMTP_USE_TLS  = _env('SMTP_USE_TLS',  required=False, default='true').lower() ==
 
 PASSWORD_RESET_TTL_MIN = int(_env('PASSWORD_RESET_TTL_MIN', required=False, default='60'))
 
-if os.environ.get('RENDER'):
-    DB_PATH = '/var/data/kenya_exam_hub.db'
-    UPLOAD_DIR = Path('/var/data/uploads')
+RENDER_DISK = Path('/var/data')
+if os.environ.get('RENDER') and RENDER_DISK.exists() and os.access(str(RENDER_DISK), os.W_OK):
+    DB_PATH = str(RENDER_DISK / 'kenya_exam_hub.db')
+    UPLOAD_DIR = RENDER_DISK / 'uploads'
 else:
+    if os.environ.get('RENDER'):
+        log.warning('RENDER is set but /var/data not writable — using ephemeral storage')
     DB_PATH = _env('DB_PATH', required=False, default=str(BASE_DIR / 'kenya_exam_hub.db'))
     UPLOAD_DIR = BASE_DIR / 'uploads'
 
