@@ -135,6 +135,19 @@ CREATE TABLE IF NOT EXISTS enrollments (
     exam TEXT NOT NULL, package TEXT, unlocked_at TEXT,
     UNIQUE(user_id, exam)
 );
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT,
+    updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS exams (
+    code TEXT PRIMARY KEY,
+    label TEXT NOT NULL,
+    short TEXT,
+    active INTEGER DEFAULT 1,
+    sort_order INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS password_resets (
     token TEXT PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
@@ -205,6 +218,76 @@ def migrate_db():
 init_db()
 migrate_db()
 
+DEFAULT_SETTINGS = {
+    'site_year':          '2026',
+    'site_name':          'Kenya Exam Hub',
+    'site_region':        'KE',
+    'single_year_price':  '499',
+    'exam_bundle_price':  '1499',
+    'mega_price':         '2999',
+}
+
+DEFAULT_EXAMS = [
+    ('KCSE',  'Kenya Certificate of Secondary Education',  'Form 4 · Grade 12',  10),
+    ('KJSEA', 'Kenya Junior School Education Assessment',  'Grade 9',            20),
+    ('KPSEA', 'Kenya Primary School Education Assessment', 'Grade 6',            30),
+]
+
+
+def seed_defaults():
+    ts = datetime.now(timezone.utc).isoformat()
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        for k, v in DEFAULT_SETTINGS.items():
+            conn.execute(
+                'INSERT OR IGNORE INTO settings (key, value, updated_at) VALUES (?,?,?)',
+                (k, v, ts)
+            )
+        for code, label, short, order in DEFAULT_EXAMS:
+            conn.execute(
+                'INSERT OR IGNORE INTO exams (code, label, short, active, sort_order, created_at) '
+                'VALUES (?,?,?,1,?,?)',
+                (code, label, short, order, ts)
+            )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def get_setting(key, default=None):
+    row = db().execute('SELECT value FROM settings WHERE key=?', (key,)).fetchone()
+    return row['value'] if row else default
+
+
+def get_settings_dict():
+    rows = db().execute('SELECT key, value FROM settings').fetchall()
+    return {r['key']: r['value'] for r in rows}
+
+
+def set_setting(key, value):
+    db().execute(
+        'INSERT INTO settings (key, value, updated_at) VALUES (?,?,?) '
+        'ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at',
+        (key, str(value), now_iso())
+    )
+
+
+def get_active_exams():
+    return db().execute(
+        'SELECT code, label, short FROM exams WHERE active=1 '
+        'ORDER BY sort_order ASC, code ASC'
+    ).fetchall()
+
+
+def get_all_exams():
+    return db().execute(
+        'SELECT code, label, short, active, sort_order FROM exams '
+        'ORDER BY sort_order ASC, code ASC'
+    ).fetchall()
+
+
+def valid_exam_codes():
+    return {r['code'] for r in db().execute('SELECT code FROM exams').fetchall()}
 
 def db():
     if 'db' not in g:
@@ -384,6 +467,14 @@ def _insert_grant(conn, user_id, product):
 
 # ── Products ────────────────────────────────────────────────
 def build_products(conn):
+    s = get_settings_dict()
+    try: single = int(s.get('single_year_price', SINGLE_YEAR_PRICE))
+    except: single = SINGLE_YEAR_PRICE
+    try: bundle = int(s.get('exam_bundle_price', EXAM_BUNDLE_PRICE))
+    except: bundle = EXAM_BUNDLE_PRICE
+    try: mega = int(s.get('mega_price', MEGA_PRICE))
+    except: mega = MEGA_PRICE
+
     rows = conn.execute(
         "SELECT DISTINCT exam, year FROM papers "
         "WHERE premium=1 AND year IS NOT NULL AND year != '' "
@@ -398,23 +489,21 @@ def build_products(conn):
     for exam, years in by_exam.items():
         for year in years:
             products.append({
-                'id': f'{exam}:{year}',
-                'exam': exam, 'year': year,
+                'id': f'{exam}:{year}', 'exam': exam, 'year': year,
                 'label': f'{exam} {year} papers',
-                'kes': SINGLE_YEAR_PRICE, 'kind': 'year',
+                'kes': single, 'kind': 'year',
             })
         if len(years) > 1:
             products.append({
-                'id': f'{exam}:ALL',
-                'exam': exam, 'year': '*',
+                'id': f'{exam}:ALL', 'exam': exam, 'year': '*',
                 'label': f'{exam} — every year',
-                'kes': EXAM_BUNDLE_PRICE, 'kind': 'exam_bundle',
+                'kes': bundle, 'kind': 'exam_bundle',
             })
 
     products.append({
         'id': 'MEGA', 'exam': '*', 'year': '*',
         'label': 'MEGA PASS — all exams · all years',
-        'kes': MEGA_PRICE, 'kind': 'mega',
+        'kes': mega, 'kind': 'mega',
     })
     return products
 
@@ -793,8 +882,8 @@ def api_admin_upload():
         'type':    (request.form.get('type') or 'past').strip().lower(),
         'premium': 1 if request.form.get('premium', 'true').lower() == 'true' else 0,
     }
-    if meta['exam'] not in ('KCSE', 'KJSEA', 'KPSEA'):
-        return jsonify({'error': 'exam must be KCSE, KJSEA or KPSEA'}), 400
+    if meta['exam'] not in valid_exam_codes():
+        return jsonify({'error': 'unknown exam code — add it under Admin → Exams first'}), 400
     if not meta['year']:
         return jsonify({'error': 'year required'}), 400
     if meta['type'] not in ALLOWED_TYPES:
@@ -911,6 +1000,122 @@ def api_admin_verify():
         return jsonify({'ok': False, 'error': 'invalid admin token'}), 403
     return jsonify({'ok': True})
 
+# ── Admin: settings ─────────────────────────────────────────
+SETTINGS_ALLOWED = {
+    'site_year', 'site_name', 'site_region',
+    'single_year_price', 'exam_bundle_price', 'mega_price',
+}
+
+
+@app.route('/api/admin/settings', methods=['GET'])
+def api_admin_settings_get():
+    if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
+    return jsonify({'settings': get_settings_dict()})
+
+
+@app.route('/api/admin/settings', methods=['PUT'])
+def api_admin_settings_put():
+    if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
+    d = request.get_json(silent=True) or {}
+    changed = 0
+    for k, v in d.items():
+        if k in SETTINGS_ALLOWED and v is not None:
+            set_setting(k, str(v).strip())
+            changed += 1
+    db().commit()
+    log.info('settings updated: %d keys', changed)
+    return jsonify({'ok': True, 'changed': changed, 'settings': get_settings_dict()})
+
+
+# ── Admin: exams ────────────────────────────────────────────
+@app.route('/api/admin/exams', methods=['GET'])
+def api_admin_exams_get():
+    if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
+    return jsonify({'exams': [dict(e) for e in get_all_exams()]})
+
+
+@app.route('/api/admin/exams', methods=['POST'])
+def api_admin_exams_post():
+    if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
+    d = request.get_json(silent=True) or {}
+    code  = (d.get('code') or '').strip().upper()
+    label = (d.get('label') or '').strip()
+    short = (d.get('short') or '').strip()
+    try: order = int(d.get('sort_order') or 50)
+    except: order = 50
+
+    if not code or not label:
+        return jsonify({'error': 'code and label are required'}), 400
+    if not re.match(r'^[A-Z0-9_]{2,12}$', code):
+        return jsonify({'error': 'code must be 2-12 uppercase letters, digits or underscore'}), 400
+
+    conn = db()
+    if conn.execute('SELECT 1 FROM exams WHERE code=?', (code,)).fetchone():
+        return jsonify({'error': 'an exam with this code already exists'}), 409
+
+    conn.execute(
+        'INSERT INTO exams (code, label, short, active, sort_order, created_at) VALUES (?,?,?,1,?,?)',
+        (code, label, short, order, now_iso())
+    )
+    conn.commit()
+    log.info('exam added: %s (%s)', code, label)
+    return jsonify({'ok': True, 'code': code})
+
+
+@app.route('/api/admin/exams/<code>', methods=['PATCH'])
+def api_admin_exams_patch(code):
+    if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
+    code = code.upper()
+    d = request.get_json(silent=True) or {}
+    if not db().execute('SELECT 1 FROM exams WHERE code=?', (code,)).fetchone():
+        return jsonify({'error': 'not found'}), 404
+
+    fields, params = [], []
+    if 'label' in d:      fields.append('label=?');      params.append(str(d['label']).strip())
+    if 'short' in d:      fields.append('short=?');      params.append(str(d['short']).strip())
+    if 'active' in d:     fields.append('active=?');     params.append(1 if d['active'] else 0)
+    if 'sort_order' in d:
+        try: params.append(int(d['sort_order'])); fields.append('sort_order=?')
+        except: pass
+    if not fields: return jsonify({'ok': True, 'changed': 0})
+
+    params.append(code)
+    db().execute('UPDATE exams SET ' + ', '.join(fields) + ' WHERE code=?', params)
+    db().commit()
+    log.info('exam updated: %s', code)
+    return jsonify({'ok': True})
+
+
+@app.route('/api/admin/exams/<code>', methods=['DELETE'])
+def api_admin_exams_delete(code):
+    if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
+    code = code.upper()
+    n = db().execute('SELECT COUNT(*) AS n FROM papers WHERE exam=?', (code,)).fetchone()['n']
+    if n > 0:
+        return jsonify({
+            'error': f'{n} paper(s) still use this exam. Delete them first, or set active=false to hide it.',
+            'papers_in_use': n,
+        }), 409
+    db().execute('DELETE FROM exams WHERE code=?', (code,))
+    db().commit()
+    log.info('exam deleted: %s', code)
+    return jsonify({'ok': True})
+
+
+# ── Public: settings + exams ────────────────────────────────
+@app.route('/api/settings')
+def api_public_settings():
+    s = get_settings_dict()
+    return jsonify({
+        'site_year':   s.get('site_year', '2026'),
+        'site_name':   s.get('site_name', 'Kenya Exam Hub'),
+        'site_region': s.get('site_region', 'KE'),
+    })
+
+
+@app.route('/api/exams')
+def api_public_exams():
+    return jsonify({'exams': [dict(e) for e in get_active_exams()]})
 
 @app.route('/api/admin/whoami')
 def api_admin_whoami():

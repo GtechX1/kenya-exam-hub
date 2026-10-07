@@ -670,6 +670,74 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
 
     <div id="adminTokenBox"></div>
 
+        <!-- ADMIN: SETTINGS -->
+    <div id="adminSettingsWrap" style="margin-bottom:32px;display:none">
+      <div class="search-lbl" style="font-size:12px;margin-bottom:16px">Site settings</div>
+      <div class="admin-form" style="margin-top:0">
+        <div class="fld-row">
+          <div class="fld">
+            <label class="fld-l">Site year (branding)</label>
+            <input class="fld-i" id="setSiteYear" placeholder="2026" maxlength="8">
+          </div>
+          <div class="fld">
+            <label class="fld-l">Site name</label>
+            <input class="fld-i" id="setSiteName" placeholder="Kenya Exam Hub">
+          </div>
+        </div>
+        <div class="fld-row">
+          <div class="fld">
+            <label class="fld-l">Region label</label>
+            <input class="fld-i" id="setSiteRegion" placeholder="KE">
+          </div>
+          <div class="fld"></div>
+        </div>
+        <div class="fld-row">
+          <div class="fld">
+            <label class="fld-l">Single year · KES</label>
+            <input class="fld-i" id="setSinglePrice" inputmode="numeric">
+          </div>
+          <div class="fld">
+            <label class="fld-l">Exam bundle · KES</label>
+            <input class="fld-i" id="setBundlePrice" inputmode="numeric">
+          </div>
+        </div>
+        <div class="fld">
+          <label class="fld-l">MEGA PASS · KES</label>
+          <input class="fld-i" id="setMegaPrice" inputmode="numeric">
+        </div>
+        <button class="btn btn-gold btn-block btn-lg" id="saveSettingsBtn">Save settings</button>
+        <div id="settingsStatus" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN: EXAMS -->
+    <div id="adminExamsWrap" style="margin-bottom:32px;display:none">
+      <div class="search-lbl" style="font-size:12px;margin-bottom:16px">Exams</div>
+      <div class="admin-form" style="margin-top:0">
+        <div class="fld-row">
+          <div class="fld">
+            <label class="fld-l">Code (short, uppercase, no spaces)</label>
+            <input class="fld-i" id="newExamCode" placeholder="KILEA" maxlength="12" style="text-transform:uppercase">
+          </div>
+          <div class="fld">
+            <label class="fld-l">Sort order</label>
+            <input class="fld-i" id="newExamOrder" placeholder="40" inputmode="numeric">
+          </div>
+        </div>
+        <div class="fld">
+          <label class="fld-l">Full label</label>
+          <input class="fld-i" id="newExamLabel" placeholder="e.g. Kenya Intermediate Level Education Assessment">
+        </div>
+        <div class="fld">
+          <label class="fld-l">Short description</label>
+          <input class="fld-i" id="newExamShort" placeholder="e.g. Grade 9 · Intermediate">
+        </div>
+        <button class="btn btn-outline btn-block" id="addExamBtn">+ Add exam</button>
+      </div>
+      <div id="adminExamsList" style="margin-top:16px"></div>
+    </div>
+
+    
     <div class="admin-grid" id="adminMain" style="display:none">
       <div>
         <div class="up-zone" id="upZone">
@@ -1047,7 +1115,11 @@ const State = {
   stkRealInProgress: false, stkCheckoutId: null,
   returnTo: null, pendingAction: null,
   resetToken: null,
-  pendingCheckout: JSON.parse(localStorage.getItem('keh_pending_checkout') || 'null')
+  pendingCheckout: JSON.parse(localStorage.getItem('keh_pending_checkout') || 'null'),
+  settings: { site_year: '2026', site_name: 'Kenya Exam Hub', site_region: 'KE' },
+  exams: [],
+  adminSettings: {},
+  adminExams: []
 };
 
 const $ = s => document.querySelector(s);
@@ -1485,6 +1557,49 @@ async function loadPapers(){
   try { const r = await fetch(API + '/api/papers'); if(!r.ok) throw 0; State.papers = (await r.json()).papers || []; }
   catch(e){ State.papers = []; }
 }
+
+async function loadPublicSettings(){
+  try {
+    const r = await fetch(API + '/api/settings');
+    if(r.ok) State.settings = await r.json();
+  } catch(e){}
+  applySiteYear(State.settings.site_year);
+}
+
+async function loadPublicExams(){
+  try {
+    const r = await fetch(API + '/api/exams');
+    if(r.ok){
+      const j = await r.json();
+      State.exams = j.exams || [];
+    }
+  } catch(e){}
+  if(!State.exams.length){
+    State.exams = [
+      { code: 'KCSE',  label: 'KCSE',  short: '' },
+      { code: 'KJSEA', label: 'KJSEA', short: '' },
+      { code: 'KPSEA', label: 'KPSEA', short: '' }
+    ];
+  }
+  if(!State.exams.some(e => e.code === State.currentExam)){
+    State.currentExam = State.exams[0].code;
+  }
+}
+
+function applySiteYear(year){
+  if(!year) return;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let n;
+  while((n = walker.nextNode())) nodes.push(n);
+  for(const node of nodes){
+    if(node.nodeValue && node.nodeValue.includes('2026')){
+      node.nodeValue = node.nodeValue.replace(/2026/g, year);
+    }
+  }
+  document.title = document.title.replace(/2026/g, year);
+}
+
 async function loadProducts(){
   try { const r = await fetch(API + '/api/products'); if(!r.ok) throw 0; State.products = (await r.json()).products || []; }
   catch(e){ State.products = []; }
@@ -1551,13 +1666,18 @@ function openPaper(id){
 
 /* ---------- Papers view ---------- */
 function renderExamTabs(){
-  const exams = ['KCSE','KJSEA','KPSEA'];
-  $('#examTabs').innerHTML = exams.map(k => {
+  const exams = State.exams.length ? State.exams : [
+    { code: 'KCSE', label: 'KCSE' }, { code: 'KJSEA', label: 'KJSEA' }, { code: 'KPSEA', label: 'KPSEA' }
+  ];
+  const cols = Math.min(exams.length, 3);
+  $('#examTabs').style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+  $('#examTabs').innerHTML = exams.map(e => {
+    const k = e.code;
     const on = State.currentExam === k;
     const count = State.papers.filter(p => p.exam === k).length;
     const anyAccess = State.grants.some(g => g.exam === k || g.exam === '*');
-    return '<button style="padding:20px;border-radius:14px;background:' + (on ? 'linear-gradient(180deg,rgba(212,175,110,.12),rgba(7,12,26,.9))' : 'var(--card)') + ';border:1.5px solid ' + (on ? 'var(--gold)' : 'var(--line)') + ';cursor:pointer;text-align:left;transition:.2s" data-exam-tab="' + k + '">' +
-      '<div style="font-family:var(--fh);font-size:22px;font-weight:600;color:' + (on ? 'var(--gold)' : '#fff') + ';margin-bottom:4px">' + k + '</div>' +
+    return '<button style="padding:20px;border-radius:14px;background:' + (on ? 'linear-gradient(180deg,rgba(212,175,110,.12),rgba(7,12,26,.9))' : 'var(--card)') + ';border:1.5px solid ' + (on ? 'var(--gold)' : 'var(--line)') + ';cursor:pointer;text-align:left;transition:.2s" data-exam-tab="' + esc(k) + '">' +
+      '<div style="font-family:var(--fh);font-size:22px;font-weight:600;color:' + (on ? 'var(--gold)' : '#fff') + ';margin-bottom:4px">' + esc(k) + '</div>' +
       '<div style="font-size:11.5px;color:var(--muted);margin-bottom:10px">' + count + ' paper' + (count===1?'':'s') + '</div>' +
       '<div style="font-family:var(--fm);font-size:10px;letter-spacing:.12em;color:' + (anyAccess ? 'var(--mint2)' : 'var(--muted)') + ';font-weight:600">' + (anyAccess ? '✓ ACCESS' : 'ENROLL REQUIRED') + '</div>' +
     '</button>';
@@ -1918,8 +2038,10 @@ function renderAdminView(){
       '<div class="admin-token-box"><div><div class="l">Staff sign-in required</div>' +
       '<div class="v">Sign in via the footer\'s Staff link to unlock uploads.</div></div>' +
       '<button class="btn btn-gold" id="adminStaffLogin">Staff sign-in</button></div>';
-    $('#adminMain').style.display = 'none';
+        $('#adminMain').style.display = 'none';
     if(uw) uw.style.display = 'none';
+    const sw = $('#adminSettingsWrap'); if(sw) sw.style.display = 'none';
+    const ew = $('#adminExamsWrap');    if(ew) ew.style.display = 'none';
     $('#adminStaffLogin').addEventListener('click', openStaff);
     return;
   }
@@ -1928,8 +2050,24 @@ function renderAdminView(){
     '<div class="admin-token-box"><div><div class="l">✓ Signed in as staff</div>' +
     '<div class="v">' + esc(tok.slice(0,8)) + '…' + esc(tok.slice(-4)) + '</div></div>' +
     '<button class="btn btn-outline btn-sm" id="adminClearToken">Sign out</button></div>';
-  $('#adminMain').style.display = 'grid';
+    $('#adminMain').style.display = 'grid';
   if(uw) uw.style.display = 'block';
+
+  // populate exam dropdown
+  const dd = $('#upExam');
+  if(dd && State.exams.length){
+    dd.innerHTML = State.exams.map(e =>
+      '<option value="' + esc(e.code) + '">' + esc(e.code) + (e.short ? ' · ' + esc(e.short) : '') + '</option>'
+    ).join('');
+  }
+
+  // show + load settings & exams
+  const sw = $('#adminSettingsWrap');
+  const ew = $('#adminExamsWrap');
+  if(sw) sw.style.display = 'block';
+  if(ew) ew.style.display = 'block';
+  loadAdminSettings();
+  loadAdminExams();
 
   $('#adminClearToken').addEventListener('click', () => {
     if(confirm('Sign out of staff access?')){
@@ -2031,6 +2169,159 @@ $('#upSubmit').addEventListener('click', async () => {
   } catch(e){ $('#upStatus').innerHTML = '<div class="notice amber">Backend not reachable.</div>'; }
   finally { btn.disabled = false; btn.textContent = 'Upload to library'; }
 });
+
+/* ---------- Admin: settings ---------- */
+async function loadAdminSettings(){
+  const tok = localStorage.getItem('keh_admin_token');
+  if(!tok) return;
+  try {
+    const r = await fetch(API + '/api/admin/settings', { headers: {'X-Admin-Token': tok} });
+    if(!r.ok) return;
+    const j = await r.json();
+    const s = j.settings || {};
+    State.adminSettings = s;
+    $('#setSiteYear').value    = s.site_year || '2026';
+    $('#setSiteName').value    = s.site_name || 'Kenya Exam Hub';
+    $('#setSiteRegion').value  = s.site_region || 'KE';
+    $('#setSinglePrice').value = s.single_year_price || '499';
+    $('#setBundlePrice').value = s.exam_bundle_price || '1499';
+    $('#setMegaPrice').value   = s.mega_price || '2999';
+  } catch(e){}
+}
+
+$('#saveSettingsBtn')?.addEventListener('click', async () => {
+  const tok = localStorage.getItem('keh_admin_token');
+  if(!tok){ toast('Staff sign-in required', 'err'); return; }
+  const body = {
+    site_year:         $('#setSiteYear').value.trim(),
+    site_name:         $('#setSiteName').value.trim(),
+    site_region:       $('#setSiteRegion').value.trim(),
+    single_year_price: $('#setSinglePrice').value.trim(),
+    exam_bundle_price: $('#setBundlePrice').value.trim(),
+    mega_price:        $('#setMegaPrice').value.trim(),
+  };
+  const btn = $('#saveSettingsBtn'); const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const r = await fetch(API + '/api/admin/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': tok },
+      body: JSON.stringify(body)
+    });
+    const j = await r.json();
+    if(r.ok){
+      $('#settingsStatus').innerHTML = '<div class="notice mint">✓ Settings saved</div>';
+      State.adminSettings = j.settings || State.adminSettings;
+      // refresh public settings + products so prices/year update live
+      await loadPublicSettings();
+      await loadProducts();
+      renderPriceTiers();
+      toast('Settings updated');
+    } else {
+      $('#settingsStatus').innerHTML = '<div class="notice amber">' + esc(j.error || 'Save failed') + '</div>';
+    }
+  } catch(e){
+    $('#settingsStatus').innerHTML = '<div class="notice amber">Backend not reachable</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = orig;
+  }
+});
+
+/* ---------- Admin: exams ---------- */
+async function loadAdminExams(){
+  const tok = localStorage.getItem('keh_admin_token');
+  if(!tok) return;
+  try {
+    const r = await fetch(API + '/api/admin/exams', { headers: {'X-Admin-Token': tok} });
+    if(!r.ok) return;
+    const j = await r.json();
+    State.adminExams = j.exams || [];
+    renderAdminExamsList();
+  } catch(e){}
+}
+
+function renderAdminExamsList(){
+  const list = $('#adminExamsList');
+  if(!State.adminExams.length){
+    list.innerHTML = '<div class="admin-empty">No exams configured.</div>';
+    return;
+  }
+  list.innerHTML = State.adminExams.map(e =>
+    '<div class="admin-li">' +
+      '<div class="ico" style="font-size:8px;font-weight:800">' + esc((e.code||'').slice(0,5)) + '</div>' +
+      '<div class="body">' +
+        '<div class="title">' + esc(e.code) + ' — ' + esc(e.label) + '</div>' +
+        '<div class="sub">' + esc(e.short || '') + ' · order ' + (e.sort_order||0) + ' · ' + (e.active ? 'ACTIVE' : 'HIDDEN') + '</div>' +
+      '</div>' +
+      '<button class="del" data-toggle-exam="' + esc(e.code) + '" data-active="' + (e.active ? 1 : 0) + '">' +
+        (e.active ? 'Hide' : 'Show') +
+      '</button>' +
+      '<button class="del" data-del-exam="' + esc(e.code) + '" style="margin-left:6px">Delete</button>' +
+    '</div>'
+  ).join('');
+
+  list.querySelectorAll('[data-toggle-exam]').forEach(b => b.addEventListener('click', async () => {
+    const tok = localStorage.getItem('keh_admin_token');
+    const code = b.dataset.toggleExam;
+    const newActive = b.dataset.active === '1' ? 0 : 1;
+    try {
+      const r = await fetch(API + '/api/admin/exams/' + code, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': tok },
+        body: JSON.stringify({ active: newActive })
+      });
+      if(r.ok){ await loadAdminExams(); await loadPublicExams(); toast('Updated'); }
+      else toast('Update failed', 'err');
+    } catch(e){ toast('Backend not reachable', 'err'); }
+  }));
+
+  list.querySelectorAll('[data-del-exam]').forEach(b => b.addEventListener('click', async () => {
+    const tok = localStorage.getItem('keh_admin_token');
+    const code = b.dataset.delExam;
+    if(!confirm('Delete exam ' + code + '?')) return;
+    try {
+      const r = await fetch(API + '/api/admin/exams/' + code, {
+        method: 'DELETE',
+        headers: { 'X-Admin-Token': tok }
+      });
+      const j = await r.json();
+      if(r.ok){ await loadAdminExams(); await loadPublicExams(); toast('Deleted'); }
+      else toast(j.error || 'Delete failed', 'err');
+    } catch(e){ toast('Backend not reachable', 'err'); }
+  }));
+}
+
+$('#addExamBtn')?.addEventListener('click', async () => {
+  const tok = localStorage.getItem('keh_admin_token');
+  if(!tok){ toast('Staff sign-in required', 'err'); return; }
+  const code  = $('#newExamCode').value.trim().toUpperCase();
+  const label = $('#newExamLabel').value.trim();
+  const short = $('#newExamShort').value.trim();
+  const order = $('#newExamOrder').value.trim() || '50';
+  if(!code || !label){ toast('Code and label are required', 'err'); return; }
+  const btn = $('#addExamBtn'); const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Adding…';
+  try {
+    const r = await fetch(API + '/api/admin/exams', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': tok },
+      body: JSON.stringify({ code, label, short, sort_order: order })
+    });
+    const j = await r.json();
+    if(r.ok){
+      $('#newExamCode').value = '';
+      $('#newExamLabel').value = '';
+      $('#newExamShort').value = '';
+      $('#newExamOrder').value = '';
+      await loadAdminExams();
+      await loadPublicExams();
+      toast('Exam added');
+    } else toast(j.error || 'Could not add exam', 'err');
+  } catch(e){ toast('Backend not reachable', 'err'); }
+  finally { btn.disabled = false; btn.textContent = orig; }
+});
+
+
 
 /* ---------- Admin: users ---------- */
 async function loadAdminUsers(){
@@ -2148,6 +2439,8 @@ async function resumePendingCheckout(){
 async function init(){
   renderFAQ();
   renderNavAuth();
+  await loadPublicSettings();
+  await loadPublicExams();
   await loadPapers();
   await loadProducts();
   if(State.jwt) await refreshMe();
