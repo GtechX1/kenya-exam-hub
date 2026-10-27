@@ -389,53 +389,68 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
   .hero p.lede{font-size:16px}
   .sec-head{flex-direction:column;align-items:flex-start;gap:16px;margin-bottom:32px}
   .foot-cta{padding:64px 0}
+}
 
-/* Force Success Vault to 2 columns on mobile */
-#vaultGrid {
-  display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important;
-  gap: 12px !important;
-}
-@media(max-width: 350px) {
-  #vaultGrid {
-    grid-template-columns: 1fr !important;
-  }
-}
 /* Success Vault Category Grid */
 .vault-category-title {
   font-family: var(--fh);
-  font-size: 20px;
-  color: #fff;
+  font-size: 22px;
+  color: var(--gold);
   margin-bottom: 16px;
   border-bottom: 1px solid var(--line);
   padding-bottom: 8px;
   margin-top: 32px;
 }
+
 .vault-book-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
-  gap: 16px;
+  /* This forces books to be exactly 140px wide and never stretch */
+  grid-template-columns: repeat(auto-fill, 140px);
+  gap: 20px;
+  width: 100%;
+  justify-content: start;
 }
-@media(min-width: 600px) {
-  .vault-book-grid { grid-template-columns: repeat(3, 1fr); } /* 3 columns on tablets */
+
+@media(max-width: 400px) {
+  .vault-book-grid {
+    grid-template-columns: repeat(auto-fill, 110px); /* Smaller on tiny phones */
+    gap: 12px;
+  }
 }
-@media(min-width: 900px) {
-  .vault-book-grid { grid-template-columns: repeat(5, 1fr); } /* 5 columns on laptops */
-}
+
 .vault-book-cover {
   width: 100%;
   aspect-ratio: 2/3;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
   border: 1px solid var(--line2);
   background: #000;
   transition: transform 0.2s;
   cursor: pointer;
 }
+
 .vault-book-cover:hover {
   transform: scale(1.05);
+  border-color: var(--gold);
 }
+
+.vault-book-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+  #bookDetailImage {
+  width: 100%;
+  max-width: 180px; /* Keeps the book small so buttons fit on screen */
+  margin: 0 auto 20px auto;
+  aspect-ratio: 2/3;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line2);
+  background: #000;
 }
 </style>
 </head>
@@ -716,7 +731,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
         <p class="sec-lede">Unlock premium e-books to master productivity, wealth, communication, networking, creativity, critical thinking, influence and mindset. Instant download after M-Pesa payment.</p>
       </div>
     </div>
-    <div id="vaultGrid" class="pk-grid"></div>
+    <div id="vaultGrid"></div>
   </div>
 </section>
 
@@ -1108,7 +1123,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
       <input class="fld-i" id="ckPhone" placeholder="07XX XXX XXX" inputmode="tel">
     </div>
     <button class="btn btn-gold btn-block btn-lg" id="ckPay">Pay with M-Pesa <span id="ckPayPrice">KES —</span></button>
-    
+
   </div>
 </div>
 
@@ -1157,7 +1172,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
 <div class="modal" id="mBookDetail">
   <div class="modal-box" style="max-width:400px;">
     <button class="modal-x" data-close>×</button>
-    <div id="bookDetailImage" style="width:100%; aspect-ratio:2/3; border-radius:12px; overflow:hidden; margin-bottom:20px; border:1px solid var(--line2)"></div>
+    <div id="bookDetailImage"></div>
     <div class="modal-h" id="bookDetailTitle" style="margin-bottom:6px"></div>
     <div class="modal-sub" id="bookDetailDesc" style="text-align:left; margin-bottom:20px; padding:0 10px;"></div>
 
@@ -1282,7 +1297,7 @@ async function refreshMe(){
     const j = await r.json();
     State.user = j.user;
     State.grants = j.grants || [];
-    State.tuitionGrants = j.tuition_grants || []; // <-- ADD THIS LINE
+    State.tuitionGrants = j.tuition_grants || [];
     localStorage.setItem('keh_user', JSON.stringify(j.user));
     renderNavAuth();
   } catch(e){}
@@ -1891,13 +1906,13 @@ function renderVaultView(){
 
   Object.entries(grouped).forEach(([category, catBooks]) => {
     html += `
-      <div>
+      <div style="margin-bottom: 32px;">
         <h3 class="vault-category-title">${esc(category)}</h3>
         <div class="vault-book-grid">
           ${catBooks.map(p => {
             const imageHtml = p.cover_image_url
-              ? `<img src="${esc(p.cover_image_url.startsWith('http') ? p.cover_image_url : API + p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;" alt="${esc(p.title)}">`
-              : `<div style="background:linear-gradient(135deg,rgba(212,175,110,.2),rgba(0,0,0,.8)); height:100%; display:grid; place-items:center; padding:10px; text-align:center; font-size:11px; color:var(--gold);">${esc(p.title)}</div>`;
+              ? `<img src="${esc(p.cover_image_url.startsWith('http') ? p.cover_image_url : API + p.cover_image_url)}" alt="${esc(p.title)}">`
+              : `<div style="background:linear-gradient(135deg,rgba(212,175,110,.2),rgba(0,0,0,.8)); height:100%; display:flex; align-items:center; justify-content:center; padding:10px; text-align:center; font-size:11px; color:var(--gold);">${esc(p.title)}</div>`;
 
             return `
               <div class="vault-book-cover" onclick="openBookDetail('${p.id}')">
@@ -2004,6 +2019,7 @@ window.openTuitionCheckout = function(pkgId) {
     const pkg = State.tuition.find(p => p.id === pkgId);
     if (!pkg) return;
     State.returnTo = captureReturn();
+    closeModals(true); // <-- ADD THIS LINE TO CLOSE THE BOOK DETAILS
     openCheckout({ id: 'TUITION:' + pkgId, label: pkg.title, kes: pkg.price_kes });
   });
 };
@@ -2335,13 +2351,13 @@ function clearPendingCheckout(){
 function showTicket(){
   const product = State.products.find(p => p.id === State.selectedProduct) || { label: '—', kes: 0 };
   const ticketId = 'KEH26-' + Math.random().toString(36).slice(2,10).toUpperCase();
-  
+
   const isTuition = State.selectedProduct && State.selectedProduct.startsWith('TUITION:');
   const pkgId = isTuition ? State.selectedProduct.split(':')[1] : null;
   const pkg = isTuition ? State.tuition.find(p => p.id === pkgId) : null;
   const isBook = pkg && pkg.tier === 'vault';
-  
-  const actionBtn = isBook 
+
+  const actionBtn = isBook
     ? `<button class="btn btn-gold btn-block btn-lg" onclick="downloadVaultBook('${pkgId}')">📥 Download E-Book Now</button>`
     : `<button class="btn btn-gold btn-block btn-lg" id="ticketOpen">Open My Library</button>`;
 
@@ -2353,11 +2369,11 @@ function showTicket(){
       '<div><strong>Amount paid:</strong> ' + money(product.kes) + '</div>' +
       '<div><strong>Status:</strong> <span style="color:var(--mint2)">Active</span></div>' +
     '</div>';
-    
+
   // Inject the button after the ticket
   const slot = $('#ticketActionSlot');
   slot.innerHTML = actionBtn;
-  
+
   if(!isBook) {
     $('#ticketOpen').addEventListener('click', () => {
       closeModals(true);
@@ -2365,7 +2381,7 @@ function showTicket(){
       setTimeout(() => { openLibrary(); navigate('papers'); }, 100);
     });
   }
-  
+
   openModal('mTicket');
 }
 
@@ -2510,7 +2526,7 @@ function renderAdminView(){
     }
   });
 
-  initAdminUpload(); // <-- ADD THIS LINE HERE
+  initAdminUpload();
 
   loadAdminList();
   loadAdminUsers();
@@ -2523,36 +2539,36 @@ async function loadAdminReferrals(){
   const list = $('#adminReferralsList');
   if(!list) return;
   if(!tok){ list.innerHTML = '<div class="admin-empty">Staff sign-in required.</div>'; return; }
-  
+
   list.innerHTML = '<div class="admin-empty">Loading referrals…</div>';
   try {
     const r = await fetch(API + '/api/admin/referrals', { headers: {'X-Admin-Token': tok} });
     if(!r.ok){ list.innerHTML = '<div class="admin-empty">Could not load referrals.</div>'; return; }
     const j = await r.json();
     const refs = j.referrals || [];
-    
+
     if(!refs.length){
       list.innerHTML = '<div class="admin-empty">No successful referral codes yet.</div>';
       return;
     }
-    
+
     let html = '<div class="admin-form" style="margin-top:0;padding:0;overflow:hidden">';
     html += '<table style="width:100%;border-collapse:collapse;text-align:left;font-size:13.5px">';
     html += '<thead><tr style="border-bottom:1px solid var(--line);color:var(--muted);font-family:var(--fm);font-size:10px;letter-spacing:.1em">';
     html += '<th style="padding:14px 16px">Referral Code</th>';
     html += '<th style="padding:14px 16px;text-align:right">Successful Orders</th>';
     html += '</tr></thead><tbody>';
-    
+
     refs.forEach(r => {
       html += '<tr style="border-bottom:1px solid var(--line)">';
       html += '<td style="padding:14px 16px;font-weight:600;color:#fff">' + esc(r.referral_code) + '</td>';
       html += '<td style="padding:14px 16px;text-align:right"><span class="user-pill mint">' + r.successful_orders + '</span></td>';
       html += '</tr>';
     });
-    
+
     html += '</tbody></table></div>';
     list.innerHTML = html;
-    
+
   } catch(e){
     list.innerHTML = '<div class="admin-empty">Backend not reachable.</div>';
   }
@@ -2606,7 +2622,7 @@ async function loadTuition(){
         <label class="fld-l">Upload Book Cover Image</label>
         <input class="fld-i" id="tp_cover" type="file" accept="image/png, image/jpeg, image/jpg, image/webp" style="padding-top:10px">
       </div>
-      
+
       <div style="border-top:1px solid var(--line);margin:16px 0;padding-top:16px">
         <div class="search-lbl" style="color:var(--gold);margin-bottom:12px">Instructor / Author Details (Optional)</div>
         <div class="fld">
@@ -3068,29 +3084,28 @@ $('#addExamBtn')?.addEventListener('click', async () => {
   const short = $('#newExamShort').value.trim();
   const order = $('#newExamOrder').value.trim() || '50';
   if(!code || !label){ toast('Code and label are required', 'err'); return; }
-      // Continues from: if(!code || !label){ toast('Code and label are required', 'err'); return; }
 
-    try {
-        const r = await fetch(API + '/api/admin/exams', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Admin-Token': tok },
-            body: JSON.stringify({ code, label, short, sort_order: parseInt(order) })
-        });
-        const j = await r.json();
-        if(r.ok){
-            toast('Exam added successfully');
-            $('#newExamCode').value = '';
-            $('#newExamLabel').value = '';
-            $('#newExamShort').value = '';
-            $('#newExamOrder').value = '';
-            await loadAdminExams();
-            await loadPublicExams();
-        } else {
-            toast(j.error || 'Failed to add exam', 'err');
-        }
-    } catch(e){
-        toast('Backend not reachable', 'err');
-    }
+  try {
+      const r = await fetch(API + '/api/admin/exams', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Admin-Token': tok },
+          body: JSON.stringify({ code, label, short, sort_order: parseInt(order) })
+      });
+      const j = await r.json();
+      if(r.ok){
+          toast('Exam added successfully');
+          $('#newExamCode').value = '';
+          $('#newExamLabel').value = '';
+          $('#newExamShort').value = '';
+          $('#newExamOrder').value = '';
+          await loadAdminExams();
+          await loadPublicExams();
+      } else {
+          toast(j.error || 'Failed to add exam', 'err');
+      }
+  } catch(e){
+      toast('Backend not reachable', 'err');
+  }
 });
 
 /* ---------- Admin: Paper Upload & Management ---------- */
@@ -3101,7 +3116,6 @@ function initAdminUpload() {
     adminUploadInited = true;       // <-- ADD THIS LINE
 
     const upZone = $('#upZone');
-    // ... rest of the function stays the same
     const upFile = $('#upFile');
     const upForm = $('#upForm');
 
