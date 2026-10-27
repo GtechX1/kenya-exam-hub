@@ -423,7 +423,8 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
       <li><a data-nav="papers" data-exam="KCSE">KCSE 2026</a></li>
       <li><a data-nav="papers" data-exam="KJSEA">KJSEA 2026</a></li>
       <li><a data-nav="papers" data-exam="KPSEA">KPSEA 2026</a></li>
-      <li><a data-nav="packages" class="hot">Predictions</a></li>
+      <li><a data-nav="vault" style="color:var(--gold);font-weight:600">The Success Vault</a></li>
+      <li><a data-nav="tuition">Tuition</a></li>
       <li><a data-nav="packages">Packages</a></li>
     </ul>
     <div class="nav-right" id="navRight">
@@ -641,7 +642,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
     <div class="sec-head">
       <div class="sec-head-left">
         <span class="sec-kick">The Exam Library</span>
-        <h2 class="sec-h2">Past papers, <em>by exam &amp; year.</em></h2>
+        <h2 class="sec-h2">Past papers, Predicted Papers<em>by exam &amp; year.</em></h2>
         <p class="sec-lede">Each exam is separated. Within each exam, papers are grouped by year so you can unlock only what you need.</p>
       </div>
     </div>
@@ -658,6 +659,34 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
   </div>
 </section>
 
+<!-- THE SUCCESS VAULT VIEW -->
+<section id="view-vault" class="hide">
+  <div class="wrap" style="padding:48px 22px 96px">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <span class="sec-kick" style="color:var(--gold)">Personal Development</span>
+        <h2 class="sec-h2">The <em>Success Vault.</em></h2>
+        <p class="sec-lede">Unlock premium e-books to master productivity, wealth, communication, networking, creativity, critical thinking, influence and mindset. Instant download after M-Pesa payment.</p>
+      </div>
+    </div>
+    <div id="vaultGrid" class="pk-grid"></div>
+  </div>
+</section>
+
+<!-- TUITION VIEW -->
+<section id="view-tuition" class="hide">
+  <div class="wrap" style="padding:48px 22px 96px">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <span class="sec-kick">Live & Recorded Classes</span>
+        <h2 class="sec-h2">Master the exam <em>with a tutor.</em></h2>
+        <p class="sec-lede">Weekly live Zoom sessions and recorded lessons for KCSE, KJSEA and KPSEA.</p>
+      </div>
+    </div>
+    <div id="tuitionGrid" class="pk-grid"></div>
+  </div>
+</section>
+
 <section id="view-admin" class="hide">
   <div class="wrap" style="padding:48px 22px 96px">
     <div class="sec-head">
@@ -670,7 +699,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
 
     <div id="adminTokenBox"></div>
 
-        <!-- ADMIN: SETTINGS -->
+    <!-- ADMIN: SETTINGS -->
     <div id="adminSettingsWrap" style="margin-bottom:32px;display:none">
       <div class="search-lbl" style="font-size:12px;margin-bottom:16px">Site settings</div>
       <div class="admin-form" style="margin-top:0">
@@ -737,7 +766,12 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
       <div id="adminExamsList" style="margin-top:16px"></div>
     </div>
 
-    
+    <!-- ADMIN: TUITION -->
+    <div id="adminTuitionWrap" style="margin-bottom:32px;display:none">
+      <div class="search-lbl" style="font-size:12px;margin-bottom:16px">Tuition & Success Vault</div>
+      <div id="p-tuition"></div>
+    </div>
+
     <div class="admin-grid" id="adminMain" style="display:none">
       <div>
         <div class="up-zone" id="upZone">
@@ -820,7 +854,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
         <div id="upStatus" style="margin-top:16px"></div>
       </div>
 
-            <div>
+      <div>
         <div class="search-lbl">Uploaded papers</div>
         <div id="adminList"></div>
       </div>
@@ -831,6 +865,12 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
       <div class="search-lbl" style="font-size:12px;margin-bottom:20px">Registered users</div>
       <div id="adminUsersStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px"></div>
       <div id="adminUsersList"></div>
+    </div>
+
+    <!-- REFERRALS PANEL -->
+    <div id="adminReferralsWrap" style="margin-top:52px">
+      <div class="search-lbl" style="font-size:12px;margin-bottom:20px">Referral Codes</div>
+      <div id="adminReferralsList"></div>
     </div>
   </div>
 </section>
@@ -875,7 +915,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
     </div>
     <div class="foot-bottom">
       <span>© 2026 KENYA EXAM HUB</span>
-      <span>PAYMENTS BY .AIRTEL · M-PESA</span>
+      <span>PAYMENTS BY M-PESA</span>
     </div>
   </div>
 </footer>
@@ -1007,16 +1047,21 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
     <button class="modal-x" data-close>×</button>
     <div class="modal-eye">Secure Checkout</div>
     <div class="modal-h">Complete your <em>enrollment</em></div>
-    <div class="modal-sub">An M-Pesa request will be sent to your phone.</div>
+    <div class="modal-sub">Choose how you want to pay.</div>
     <div style="padding:16px 18px;border-radius:12px;background:var(--goldS);border:1px solid rgba(212,175,110,.3);display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px">
       <span id="ckLabel" style="font-family:var(--fm);font-size:11px;letter-spacing:.1em;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span>
       <span id="ckPrice" style="font-family:var(--fh);font-size:22px;font-weight:600;color:var(--gold);white-space:nowrap">KES —</span>
     </div>
     <div class="fld">
-      <label class="fld-l">M-Pesa phone</label>
+      <label class="fld-l">Referral Code (Optional)</label>
+      <input class="fld-i" id="ckReferral" placeholder="e.g. JOHN10" style="text-transform: uppercase;">
+    </div>
+    <div class="fld">
+      <label class="fld-l">Phone number</label>
       <input class="fld-i" id="ckPhone" placeholder="07XX XXX XXX" inputmode="tel">
     </div>
-    <button class="btn btn-gold btn-block btn-lg" id="ckPay">Pay <span id="ckPayPrice">KES —</span></button>
+    <button class="btn btn-gold btn-block btn-lg" id="ckPay">Pay with M-Pesa <span id="ckPayPrice">KES —</span></button>
+    
   </div>
 </div>
 
@@ -1045,7 +1090,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
     <div class="modal-h">You're <em>in.</em></div>
     <div class="modal-sub" style="margin-bottom:24px">Your access is now live.</div>
     <div class="ticket" id="ticketBox"></div>
-    <button class="btn btn-gold btn-block btn-lg" id="ticketOpen">Open My Library</button>
+    <div id="ticketActionSlot"></div>
   </div>
 </div>
 
@@ -1074,7 +1119,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
       <button class="search-pill" data-q="KCSE Biology">KCSE Biology</button>
       <button class="search-pill" data-q="KJSEA English">KJSEA English</button>
       <button class="search-pill" data-q="marking scheme">Marking schemes</button>
-      <button class="search-pill" data-q="Agriculture 2024">Agriculture 2024</button>
+      <button class="search-pill" data-q="Agriculture 2025">Agriculture 2025</button>
       <button class="search-pill" data-q="Chemistry">Chemistry</button>
       <button class="search-pill" data-q="mocks">Mocks</button>
     </div>
@@ -1094,22 +1139,23 @@ const FAQS = [
     a:'You can unlock <strong>a specific year of a specific exam</strong> (e.g. KCSE 2024), or <strong>all years of one exam</strong> (KCSE — every year), or the <strong>MEGA PASS</strong> which unlocks everything across KCSE, KJSEA and KPSEA for all years.' },
   { q:'Do I need an account?',
     a:'Yes — a simple account with your name, email, phone and password. Sign in with either your email or phone number.' },
-  { q:'How does M-Pesa payment work?',
-    a:'Enter the Safaricom number you want to pay from. Safaricom sends an STK Push prompt. You approve it on your phone with your PIN. Your access unlocks as soon as our server confirms the payment.' },
+  { q:'How does payment work?',
+    a:'Pay with <strong>Safaricom M-Pesa</strong> via STK push (approve the prompt on your phone), or with <strong>Airtel Money Coming soon... or a card</strong> through our secure hosted checkout.' },
   { q:'When do I get access after payment?',
-    a:'Immediately. Once our server confirms the payment with Safaricom, the papers you unlocked open instantly.' },
+    a:'Immediately. Once our server confirms the payment, the papers you unlocked open instantly.' },
   { q:'Can schools and teachers access it?',
-    a:'Yes. Bulk licences with consolidated invoicing and class-level analytics. Contact hello@kenyaexamhub.co.ke.' },
+    a:'Yes. Bulk licences with consolidated invoicing and class-level analytics. Contact kenyaexamhub@gmail.com.' },
   { q:'Is Kenya Exam Hub affiliated with KNEC?',
     a:'No. We are an independent educational preparation platform.' }
 ];
 
 const State = {
-  papers: [], products: [],
+  papers: [], products: [], tuition: [],
   currentExam: 'KCSE', currentYear: null, currentType: 'all',
   jwt: localStorage.getItem('keh_jwt') || '',
   user: JSON.parse(localStorage.getItem('keh_user') || 'null'),
   grants: [],
+  tuitionGrants: [],
   selectedProduct: null,
   stagedFile: null,
   stkRealInProgress: false, stkCheckoutId: null,
@@ -1172,6 +1218,7 @@ async function refreshMe(){
     const j = await r.json();
     State.user = j.user;
     State.grants = j.grants || [];
+    State.tuitionGrants = j.tuition_grants || []; // <-- ADD THIS LINE
     localStorage.setItem('keh_user', JSON.stringify(j.user));
     renderNavAuth();
   } catch(e){}
@@ -1199,6 +1246,8 @@ function renderNavAuth(){
       '</div>' +
       '<div class="nav-menu" id="navMenu">' +
         '<a data-nav="papers">Browse papers</a>' +
+        '<a data-nav="tuition">Tuition classes</a>' +
+        '<a data-nav="vault">The Success Vault</a>' +
         '<a id="menuLibrary">My Library</a>' +
         '<div class="sep"></div>' +
         '<a id="menuSignOut">Sign out</a>' +
@@ -1270,7 +1319,7 @@ window.addEventListener('popstate', () => {
 
 /* ---------- Router ---------- */
 function navigate(view, opts){
-  ['home','papers','admin'].forEach(v => $('#view-' + v).classList.add('hide'));
+  ['home','papers','admin','tuition','vault'].forEach(v => $('#view-' + v).classList.add('hide'));
   let scrollToId = null;
   if(view === 'packages'){ view = 'home'; scrollToId = 'packages'; }
 
@@ -1281,6 +1330,12 @@ function navigate(view, opts){
     if(opts && opts.exam) State.currentExam = opts.exam;
     if(opts && 'year' in opts) State.currentYear = opts.year;
     renderPapersView();
+  } else if(view === 'tuition'){
+    $('#view-tuition').classList.remove('hide');
+    renderTuitionView();
+  } else if(view === 'vault'){
+    $('#view-vault').classList.remove('hide');
+    renderVaultView();
   } else if(view === 'admin'){
     $('#view-admin').classList.remove('hide');
     renderAdminView();
@@ -1298,8 +1353,10 @@ function navigate(view, opts){
 
 function captureReturn(){
   const onPapers = !$('#view-papers').classList.contains('hide');
+  const onTuition = !$('#view-tuition').classList.contains('hide');
+  const onVault = !$('#view-vault').classList.contains('hide');
   return {
-    view: onPapers ? 'papers' : 'home',
+    view: onPapers ? 'papers' : onTuition ? 'tuition' : onVault ? 'vault' : 'home',
     exam: onPapers ? State.currentExam : null,
     year: onPapers ? State.currentYear : null,
     scrollY: window.scrollY
@@ -1310,6 +1367,10 @@ function finalizePurchase(){
   State.returnTo = null;
   if(target.view === 'papers'){
     navigate('papers', { exam: target.exam || State.currentExam, year: target.year });
+  } else if(target.view === 'tuition'){
+    navigate('tuition');
+  } else if(target.view === 'vault'){
+    navigate('vault');
   } else {
     navigate('home');
     if(target.scrollY > 40) setTimeout(() => window.scrollTo({top: target.scrollY, behavior: 'instant'}), 40);
@@ -1456,7 +1517,7 @@ $('#forgotBtn').addEventListener('click', async () => {
   finally { btn.disabled = false; btn.textContent = 'Send reset link'; }
 });
 
-/* ---------- Reset password (from URL #reset=TOKEN) ---------- */
+/* ---------- Reset password ---------- */
 function openReset(token){
   State.resetToken = token;
   $('#resetErr').innerHTML = '';
@@ -1558,6 +1619,13 @@ async function loadPapers(){
   catch(e){ State.papers = []; }
 }
 
+async function loadTuitionPublic(){
+  try {
+    const r = await fetch(API + '/api/tuition/packages');
+    if(r.ok){ const j = await r.json(); State.tuition = j.packages || []; }
+  } catch(e){ State.tuition = []; }
+}
+
 async function loadPublicSettings(){
   try {
     const r = await fetch(API + '/api/settings');
@@ -1569,10 +1637,7 @@ async function loadPublicSettings(){
 async function loadPublicExams(){
   try {
     const r = await fetch(API + '/api/exams');
-    if(r.ok){
-      const j = await r.json();
-      State.exams = j.exams || [];
-    }
+    if(r.ok){ const j = await r.json(); State.exams = j.exams || []; }
   } catch(e){}
   if(!State.exams.length){
     State.exams = [
@@ -1581,9 +1646,7 @@ async function loadPublicExams(){
       { code: 'KPSEA', label: 'KPSEA', short: '' }
     ];
   }
-  if(!State.exams.some(e => e.code === State.currentExam)){
-    State.currentExam = State.exams[0].code;
-  }
+  if(!State.exams.some(e => e.code === State.currentExam)){ State.currentExam = State.exams[0].code; }
 }
 
 function applySiteYear(year){
@@ -1742,6 +1805,185 @@ function renderPapersView(){
   attachPaperCardHandlers(grid);
 }
 
+/* ---------- Success Vault view ---------- */
+function renderVaultView(){
+  const grid = $('#vaultGrid');
+  const books = State.tuition.filter(p => p.tier === 'vault');
+  if(!books.length){
+    grid.innerHTML = '<div class="admin-empty">The vault is currently locked. New books are added weekly.</div>';
+    return;
+  }
+  grid.innerHTML = books.map(p => {
+    // Check if the user owns this specific book
+    const owned = State.tuitionGrants.some(g => g.package_id === p.id);
+
+    return `
+    <div class="pk" style="border-color:rgba(212,175,110,.4); background:linear-gradient(180deg,rgba(212,175,110,.08),rgba(255,255,255,.02))">
+      <span class="pk-badge" style="background:linear-gradient(135deg,#D4AF6E,#B8935A);color:#000">SUCCESS VAULT</span>
+      <h3 style="color:var(--gold)">${esc(p.title)}</h3>
+      <div class="pk-desc">${esc(p.description)}</div>
+      <div class="pk-price" style="margin-top:auto">
+        <small>KES</small><b style="color:var(--gold)">${p.price_kes}</b>
+      </div>
+      <div class="pk-div" style="background:rgba(212,175,110,.2)"></div>
+      <ul class="pk-list">
+        <li>Instant PDF Download</li>
+        <li>Lifetime access</li>
+        <li>Read on any device</li>
+      </ul>
+      ${owned
+        ? `<button class="btn btn-gold btn-block" onclick="downloadVaultBook('${p.id}')">📥 Download E-Book Now</button>`
+        : `<button class="btn btn-outline btn-block" style="margin-bottom:10px" onclick="previewVaultBook('${p.id}')">👁️ Read Preview</button>
+           <button class="btn btn-gold btn-block" onclick="openTuitionCheckout('${p.id}')">Unlock E-Book</button>`
+      }
+    </div>
+  `}).join('');
+}
+
+/* ---------- Tuition view ---------- */
+function renderTuitionView(){
+  const grid = $('#tuitionGrid');
+  const courses = State.tuition.filter(p => p.tier !== 'vault');
+  if(!courses.length){
+    grid.innerHTML = '<div class="admin-empty">No classes available yet. Check back soon.</div>';
+    return;
+  }
+  const sorted = courses.sort((a,b) => a.price_kes - b.price_kes);
+  grid.innerHTML = sorted.map(p => {
+    // Check if the user owns this specific course
+    const owned = State.tuitionGrants.some(g => g.package_id === p.id);
+
+    return `
+    <div class="pk ${p.tier === 'live' ? 'feat' : ''}">
+      <span class="pk-badge ${p.tier === 'live' ? '' : 'blue'}">
+        ${p.tier === 'study_plan' ? 'REVISION PLAN' : p.tier === 'live' ? '★ LIVE BOOTCAMP' : 'RECORDED COURSE'}
+      </span>
+      <h3>${esc(p.title)}</h3>
+      <div class="pk-desc">${esc(p.description)}</div>
+      ${p.instructor_name ? `<div style="font-family:var(--fm);font-size:11px;color:var(--gold);margin-bottom:12px">With ${esc(p.instructor_name)}</div>` : ''}
+      <div class="pk-price"><small>KES</small><b>${p.price_kes}</b></div>
+      <div class="pk-div"></div>
+      <ul class="pk-list">
+        ${p.tier === 'study_plan' ? '<li>Instant PDF download</li><li>Week-by-week revision plan</li>' : ''}
+        ${p.tier === 'recorded' ? '<li>Recorded video lessons</li><li>Past paper walkthroughs</li>' : ''}
+        ${p.tier === 'live' ? '<li>Weekly live Zoom classes</li><li>Recordings included</li>' : ''}
+      </ul>
+      ${owned
+        ? `<button class="btn btn-gold btn-block" onclick="openTuitionPortal('${p.id}')">▶ Open Course Portal</button>`
+        : `<button class="btn btn-outline btn-block" onclick="openTuitionCheckout('${p.id}')">Enroll Now</button>`
+      }
+    </div>
+  `}).join('');
+}
+window.previewVaultBook = async function(pkgId) {
+  // If not logged in, require auth first
+  if(!isLoggedIn()) {
+    requireAuth(() => window.previewVaultBook(pkgId));
+    return;
+  }
+
+  const r = await fetch(API + '/api/tuition/package/' + pkgId, {
+    headers: { 'Authorization': 'Bearer ' + State.jwt }
+  });
+  const j = await r.json();
+
+  if (j.videos && j.videos.length > 0) {
+    const v = j.videos[0]; // Preview the first PDF in the pack
+    // This URL hits the Python route we updated, which serves the preview if unpaid
+    const src = API + '/api/tuition/video/' + v.id + '?t=' + encodeURIComponent(State.jwt);
+    window.open(src, '_blank');
+  } else {
+    toast('No preview available for this package.', 'err');
+  }
+};
+
+window.openTuitionCheckout = function(pkgId) {
+  State.selectedProduct = 'TUITION:' + pkgId;
+  requireAuth(() => {
+    const pkg = State.tuition.find(p => p.id === pkgId);
+    if (!pkg) return;
+    State.returnTo = captureReturn();
+    openCheckout({ id: 'TUITION:' + pkgId, label: pkg.title, kes: pkg.price_kes });
+  });
+};
+
+window.openTuitionPortal = async function(pkgId){
+  const r = await fetch(API + '/api/tuition/package/' + pkgId, {
+    headers: { 'Authorization': 'Bearer ' + State.jwt }
+  });
+  const j = await r.json();
+  if (!j.unlocked) { toast('Please enroll to access this package.', 'err'); return; }
+
+  let instructorHtml = '';
+  if (j.package.instructor_name) {
+    instructorHtml = `
+      <div style="padding:16px;background:var(--goldS);border:1px solid rgba(212,175,110,.3);border-radius:12px;margin-bottom:24px">
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your Instructor</div>
+        <div style="font-family:var(--fh);font-size:20px;color:#fff;margin-bottom:4px">${esc(j.package.instructor_name)}</div>
+        <div style="font-size:13px;color:var(--muted)">${esc(j.package.instructor_bio || '')}</div>
+      </div>
+    `;
+  }
+
+  let videoHtml = '<div style="display:flex;flex-direction:column;gap:16px">';
+  if (j.videos.length) {
+    j.videos.forEach(v => {
+      const src = v.video_url || ('/api/tuition/video/' + v.id + '?t=' + encodeURIComponent(State.jwt));
+      const isPdf = v.filename && v.filename.toLowerCase().endsWith('.pdf');
+      videoHtml += `
+        <div style="padding:16px;border:1px solid var(--line);border-radius:12px">
+          <div style="font-weight:600;color:#fff;margin-bottom:10px">${esc(v.title)}</div>
+          ${isPdf
+            ? `<a href="${src}" target="_blank" class="btn btn-gold" style="display:inline-flex">📄 Download PDF / Study Plan</a>`
+            : `<video controls style="width:100%;border-radius:8px" src="${src}"></video>`
+          }
+        </div>
+      `;
+    });
+  } else {
+    videoHtml += '<div class="notice blue">No materials uploaded yet.</div>';
+  }
+  videoHtml += '</div>';
+
+  let classHtml = '<div style="display:flex;flex-direction:column;gap:12px;margin-top:24px">';
+  if (j.classes.length) {
+    j.classes.forEach(c => {
+      const date = new Date(c.start_time).toLocaleString();
+      classHtml += `
+        <div style="padding:16px;border:1px solid var(--line);border-radius:12px;background:rgba(59,130,246,.1)">
+          <div style="font-weight:600;color:#93C5FD;margin-bottom:4px">LIVE: ${esc(c.title)}</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px">${date} · ${c.duration_mins} mins</div>
+          <a href="${esc(c.zoom_link)}" target="_blank" class="btn btn-gold" style="display:inline-flex">Join Zoom Meeting</a>
+        </div>
+      `;
+    });
+  } else if (j.package.tier === 'live') {
+    classHtml += '<div class="notice blue">No live classes scheduled yet.</div>';
+  }
+  classHtml += '</div>';
+
+  const modalHtml = `
+    <div class="modal-box wide">
+      <button class="modal-x" data-close>×</button>
+      <div class="modal-eye">Tuition Portal</div>
+      <div class="modal-h" style="margin-bottom:24px">${esc(j.package.title)}</div>
+      ${instructorHtml}
+      ${j.package.tier !== 'live' || j.videos.length ? `<h3 style="font-size:16px;color:#fff;margin-bottom:12px">Course Materials</h3>${videoHtml}` : ''}
+      ${j.package.tier === 'live' ? `<h3 style="font-size:16px;color:#fff;margin-bottom:12px">Live Schedule</h3>${classHtml}` : ''}
+    </div>
+  `;
+
+  let modal = $('#mTuitionPortal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'mTuitionPortal';
+    modal.className = 'modal';
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML = modalHtml;
+  openModal('mTuitionPortal');
+};
+
 /* ---------- FAQ ---------- */
 function renderFAQ(){
   const wrap = $('#faqWrap');
@@ -1797,6 +2039,7 @@ function renderPickList(context){
     const feat = p.kind === 'mega';
     const sub = p.kind === 'year' ? (p.exam + ' · ' + p.year)
              : p.kind === 'exam_bundle' ? (p.exam + ' · all years')
+             : p.kind === 'tuition' ? 'Tuition Package'
              : 'Everything · all exams · all years';
     return '<div class="pk-pick-opt ' + (feat ? 'feat' : '') + ' ' + (on ? 'on' : '') + '" data-pick="' + esc(p.id) + '">' +
       '<span class="pk-pick-radio"></span>' +
@@ -1827,10 +2070,13 @@ function openCheckout(product){
   $('#ckPrice').textContent = money(product.kes);
   $('#ckPayPrice').textContent = money(product.kes);
   $('#ckPhone').value = (State.user && State.user.phone) || '';
+  $('#ckReferral').value = '';
   openModal('mCheckout');
 }
+
 $('#ckPay').addEventListener('click', async () => {
   const phone = $('#ckPhone').value.trim();
+  const referral_code = $('#ckReferral').value.trim();
   if(!phone){ toast('Enter the M-Pesa phone number', 'err'); return; }
   closeModals(true);
   resetWaitingUI();
@@ -1842,7 +2088,7 @@ $('#ckPay').addEventListener('click', async () => {
     const r = await fetch(API + '/api/checkout/initiate', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + State.jwt},
-      body: JSON.stringify({ product_id: State.selectedProduct, phone })
+      body: JSON.stringify({ product_id: State.selectedProduct, phone, referral_code })
     });
     const j = await r.json();
     if(r.ok && j.checkout_id){
@@ -1895,6 +2141,53 @@ $('#waitCheckNow').addEventListener('click', async () => {
   finally { btn.disabled = false; btn.textContent = orig; }
 });
 
+/* ---------- Hosted checkout (Airtel / Card) ---------- */
+$('#ckPayHosted')?.addEventListener('click', async () => {
+  if(!State.selectedProduct) return;
+  const referral_code = $('#ckReferral').value.trim();
+  const product = State.products.find(p => p.id === State.selectedProduct);
+  if(!product) return;
+
+  closeModals(true);
+  resetWaitingUI();
+  $('#waitTitle').textContent = 'Preparing secure checkout';
+  $('#waitText').innerHTML = 'Please wait while we connect you to the secure payment page.';
+  $('#waitRef').textContent = 'Do not close this window.';
+  openModal('mWaiting');
+
+  try {
+    const r = await fetch(API + '/api/checkout/hosted', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + State.jwt },
+      body: JSON.stringify({ product_id: State.selectedProduct, referral_code })
+    });
+    const j = await r.json();
+
+    if(r.ok && j.checkout_url){
+      $('#waitTitle').textContent = 'Redirecting…';
+      $('#waitText').innerHTML = 'Taking you to the secure payment page.';
+      $('#waitSpinner').style.display = 'block';
+      setTimeout(() => { window.location.href = j.checkout_url; }, 700);
+    } else {
+      $('#waitSpinner').style.display = 'none';
+      $('#waitIcon').className = 'waiting-icon fail';
+      $('#waitIcon').textContent = '⚠';
+      $('#waitTitle').textContent = 'Could not start checkout';
+      $('#waitText').innerHTML = esc(j.error || 'Please try again or use M-Pesa.');
+      $('#waitRetry').style.display = 'block';
+      $('#waitBackHome').style.display = 'block';
+    }
+  } catch(e){
+    $('#waitSpinner').style.display = 'none';
+    $('#waitIcon').className = 'waiting-icon fail';
+    $('#waitIcon').textContent = '⚠';
+    $('#waitTitle').textContent = 'Backend not reachable';
+    $('#waitText').innerHTML = 'Please check your connection and try again.';
+    $('#waitRetry').style.display = 'block';
+    $('#waitBackHome').style.display = 'block';
+  }
+});
+
 /* ---------- Polling ---------- */
 let _pollTimer = null;
 async function pollStatus(checkoutId){
@@ -1941,6 +2234,16 @@ function clearPendingCheckout(){
 function showTicket(){
   const product = State.products.find(p => p.id === State.selectedProduct) || { label: '—', kes: 0 };
   const ticketId = 'KEH26-' + Math.random().toString(36).slice(2,10).toUpperCase();
+  
+  const isTuition = State.selectedProduct && State.selectedProduct.startsWith('TUITION:');
+  const pkgId = isTuition ? State.selectedProduct.split(':')[1] : null;
+  const pkg = isTuition ? State.tuition.find(p => p.id === pkgId) : null;
+  const isBook = pkg && pkg.tier === 'vault';
+  
+  const actionBtn = isBook 
+    ? `<button class="btn btn-gold btn-block btn-lg" onclick="downloadVaultBook('${pkgId}')">📥 Download E-Book Now</button>`
+    : `<button class="btn btn-gold btn-block btn-lg" id="ticketOpen">Open My Library</button>`;
+
   $('#ticketBox').innerHTML =
     '<div class="ticket-hd"><span class="ticket-lbl">Access Pass</span><span class="ticket-tag">' + esc(product.label) + '</span></div>' +
     '<div class="ticket-name">' + esc(product.label) + '</div>' +
@@ -1949,13 +2252,37 @@ function showTicket(){
       '<div><strong>Amount paid:</strong> ' + money(product.kes) + '</div>' +
       '<div><strong>Status:</strong> <span style="color:var(--mint2)">Active</span></div>' +
     '</div>';
+    
+  // Inject the button after the ticket
+  const slot = $('#ticketActionSlot');
+  slot.innerHTML = actionBtn;
+  
+  if(!isBook) {
+    $('#ticketOpen').addEventListener('click', () => {
+      closeModals(true);
+      State.returnTo = null;
+      setTimeout(() => { openLibrary(); navigate('papers'); }, 100);
+    });
+  }
+  
   openModal('mTicket');
 }
-$('#ticketOpen').addEventListener('click', () => {
-  closeModals(true);
-  State.returnTo = null;
-  setTimeout(() => { openLibrary(); navigate('papers'); }, 100);
-});
+
+async function downloadVaultBook(pkgId) {
+  closeModals();
+  const r = await fetch(API + '/api/tuition/package/' + pkgId, {
+    headers: { 'Authorization': 'Bearer ' + State.jwt }
+  });
+  const j = await r.json();
+  if (j.unlocked && j.videos.length > 0) {
+    const v = j.videos[0];
+    const src = v.video_url || (API + '/api/tuition/video/' + v.id + '?t=' + encodeURIComponent(State.jwt));
+    window.open(src, '_blank');
+  } else {
+    toast('Please check your library to access the file.', 'err');
+    openTuitionPortal(pkgId);
+  }
+}
 
 /* ---------- Library ---------- */
 function openLibrary(){
@@ -2032,14 +2359,18 @@ $('#footBuyMega').addEventListener('click', buyMega);
 function renderAdminView(){
   const tok = localStorage.getItem('keh_admin_token');
   const uw = $('#adminUsersWrap');
+  const tw = $('#adminTuitionWrap');
+  const rw = $('#adminReferralsWrap');
 
   if(!tok){
     $('#adminTokenBox').innerHTML =
       '<div class="admin-token-box"><div><div class="l">Staff sign-in required</div>' +
       '<div class="v">Sign in via the footer\'s Staff link to unlock uploads.</div></div>' +
       '<button class="btn btn-gold" id="adminStaffLogin">Staff sign-in</button></div>';
-        $('#adminMain').style.display = 'none';
+    $('#adminMain').style.display = 'none';
     if(uw) uw.style.display = 'none';
+    if(tw) tw.style.display = 'none';
+    if(rw) rw.style.display = 'none';
     const sw = $('#adminSettingsWrap'); if(sw) sw.style.display = 'none';
     const ew = $('#adminExamsWrap');    if(ew) ew.style.display = 'none';
     $('#adminStaffLogin').addEventListener('click', openStaff);
@@ -2050,10 +2381,11 @@ function renderAdminView(){
     '<div class="admin-token-box"><div><div class="l">✓ Signed in as staff</div>' +
     '<div class="v">' + esc(tok.slice(0,8)) + '…' + esc(tok.slice(-4)) + '</div></div>' +
     '<button class="btn btn-outline btn-sm" id="adminClearToken">Sign out</button></div>';
-    $('#adminMain').style.display = 'grid';
+  $('#adminMain').style.display = 'grid';
   if(uw) uw.style.display = 'block';
+  if(tw) tw.style.display = 'block';
+  if(rw) rw.style.display = 'block';
 
-  // populate exam dropdown
   const dd = $('#upExam');
   if(dd && State.exams.length){
     dd.innerHTML = State.exams.map(e =>
@@ -2061,13 +2393,13 @@ function renderAdminView(){
     ).join('');
   }
 
-  // show + load settings & exams
   const sw = $('#adminSettingsWrap');
   const ew = $('#adminExamsWrap');
   if(sw) sw.style.display = 'block';
   if(ew) ew.style.display = 'block';
   loadAdminSettings();
   loadAdminExams();
+  loadTuition();
 
   $('#adminClearToken').addEventListener('click', () => {
     if(confirm('Sign out of staff access?')){
@@ -2078,97 +2410,419 @@ function renderAdminView(){
   });
   loadAdminList();
   loadAdminUsers();
+  loadAdminReferrals();
 }
 
-const upZone = $('#upZone'), upFile = $('#upFile');
-if(upZone){
-  upZone.addEventListener('click', () => upFile.click());
-  upZone.addEventListener('dragover', e => { e.preventDefault(); upZone.classList.add('drag'); });
-  upZone.addEventListener('dragleave', () => upZone.classList.remove('drag'));
-  upZone.addEventListener('drop', e => {
-    e.preventDefault(); upZone.classList.remove('drag');
-    if(e.dataTransfer.files.length) handleStagedFile(e.dataTransfer.files[0]);
-  });
-  upFile.addEventListener('change', () => { if(upFile.files.length) handleStagedFile(upFile.files[0]); });
-}
-function handleStagedFile(f){
-  if(f.type !== 'application/pdf' && !f.name.toLowerCase().endsWith('.pdf')){ toast('Only PDF files accepted', 'err'); return; }
-  if(f.size > 100 * 1024 * 1024){ toast('File over 100 MB', 'err'); return; }
-  State.stagedFile = f;
-  $('#upFileName').textContent = f.name;
-  $('#upFileSize').textContent = fmtSize(f.size);
-  const name = f.name.toLowerCase();
-  const ex = ['kcse','kjsea','kpsea'].find(x => name.includes(x));
-  if(ex) $('#upExam').value = ex.toUpperCase();
-  const y = name.match(/(20\d{2})/);
-  if(y) $('#upYear').value = y[1];
-  if(name.includes('marking') || name.includes(' ms') || name.includes('-ms')) $('#upType').value = 'scheme';
-  else if(name.includes('mock')) $('#upType').value = 'mocks';
-  else if(name.includes('predict')) $('#upType').value = 'predicted';
-  else if(name.includes('revision')) $('#upType').value = 'revision';
-  else $('#upType').value = 'past';
-  $('#upTitle').value = f.name.replace(/\.pdf$/i, '').replace(/[-_]+/g, ' ').trim();
-  const subjectMap = {
-    agriculture:'Agriculture', maths:'Mathematics', mathematics:'Mathematics',
-    english:'English', kiswahili:'Kiswahili', biology:'Biology', chemistry:'Chemistry',
-    physics:'Physics', geography:'Geography', history:'History & Government',
-    cre:'Christian Religious Education', ire:'Islamic Religious Education',
-    business:'Business Studies', computer:'Computer Studies', homescience:'Home Science',
-    arts:'Art & Design', music:'Music', french:'French'
-  };
-  for(const k in subjectMap){ if(name.includes(k)){ $('#upSubject').value = subjectMap[k]; break; } }
-  if(name.includes('paper 1') || name.includes('p1')) $('#upPaper').value = 'Paper 1';
-  else if(name.includes('paper 2') || name.includes('p2')) $('#upPaper').value = 'Paper 2';
-  else if(name.includes('marking')) $('#upPaper').value = 'Marking Scheme';
-  if(!$('#upHook').value) $('#upHook').value = 'Based on examiner patterns. Most candidates lose marks in Section B — check the marking scheme.';
-  $('#upForm').classList.remove('hide');
-}
-$('#upCancel').addEventListener('click', () => {
-  State.stagedFile = null;
-  $('#upForm').classList.add('hide');
-  $('#upFile').value = '';
-});
-$('#upSubmit').addEventListener('click', async () => {
-  if(!State.stagedFile){ toast('No file staged', 'err'); return; }
+/* ---------- Admin: Referrals ---------- */
+async function loadAdminReferrals(){
   const tok = localStorage.getItem('keh_admin_token');
-  if(!tok){ toast('Staff sign-in required', 'err'); return; }
-  const exam = $('#upExam').value;
-  const year = $('#upYear').value.trim();
-  const subject = $('#upSubject').value.trim();
-  const paper = $('#upPaper').value.trim();
-  const title = $('#upTitle').value.trim();
-  const hook = $('#upHook').value.trim();
-  const type = $('#upType').value;
-  const pages = $('#upPages').value.trim();
-  const premium = $('#upPremium').checked ? 'true' : 'false';
-  if(!exam || !year || !subject || !title || !hook){ toast('Fill in exam, year, subject, title and hook', 'err'); return; }
-  const btn = $('#upSubmit');
-  btn.disabled = true; btn.textContent = 'Uploading…';
-  $('#upStatus').innerHTML = '';
+  const list = $('#adminReferralsList');
+  if(!list) return;
+  if(!tok){ list.innerHTML = '<div class="admin-empty">Staff sign-in required.</div>'; return; }
+  
+  list.innerHTML = '<div class="admin-empty">Loading referrals…</div>';
   try {
-    const fd = new FormData();
-    fd.append('file', State.stagedFile);
-    fd.append('exam', exam); fd.append('year', year);
-    fd.append('subject', subject); fd.append('paper', paper);
-    fd.append('title', title); fd.append('hook', hook);
-    fd.append('type', type); if(pages) fd.append('pages', pages);
-    fd.append('premium', premium);
-    const r = await fetch(API + '/api/admin/papers', { method: 'POST', headers: {'X-Admin-Token': tok}, body: fd });
+    const r = await fetch(API + '/api/admin/referrals', { headers: {'X-Admin-Token': tok} });
+    if(!r.ok){ list.innerHTML = '<div class="admin-empty">Could not load referrals.</div>'; return; }
     const j = await r.json();
-    if(r.ok && j.id){
-      $('#upStatus').innerHTML = '<div class="notice mint">✓ Uploaded — ' + (j.pages||'?') + ' pages' + (j.preview ? ' · preview ready' : ' · preview MISSING — install pypdf') + '</div>';
-      State.stagedFile = null;
-      $('#upForm').classList.add('hide');
-      $('#upFile').value = '';
-      $('#upHook').value = '';
-      await loadPapers(); await loadProducts();
-      $('#sPapers').dataset.count = State.papers.length;
-      renderPriceTiers(); renderAdminList();
-      toast('Paper uploaded');
-    } else $('#upStatus').innerHTML = '<div class="notice amber">' + esc(j.error || 'Upload failed') + '</div>';
-  } catch(e){ $('#upStatus').innerHTML = '<div class="notice amber">Backend not reachable.</div>'; }
-  finally { btn.disabled = false; btn.textContent = 'Upload to library'; }
-});
+    const refs = j.referrals || [];
+    
+    if(!refs.length){
+      list.innerHTML = '<div class="admin-empty">No successful referral codes yet.</div>';
+      return;
+    }
+    
+    let html = '<div class="admin-form" style="margin-top:0;padding:0;overflow:hidden">';
+    html += '<table style="width:100%;border-collapse:collapse;text-align:left;font-size:13.5px">';
+    html += '<thead><tr style="border-bottom:1px solid var(--line);color:var(--muted);font-family:var(--fm);font-size:10px;letter-spacing:.1em">';
+    html += '<th style="padding:14px 16px">Referral Code</th>';
+    html += '<th style="padding:14px 16px;text-align:right">Successful Orders</th>';
+    html += '</tr></thead><tbody>';
+    
+    refs.forEach(r => {
+      html += '<tr style="border-bottom:1px solid var(--line)">';
+      html += '<td style="padding:14px 16px;font-weight:600;color:#fff">' + esc(r.referral_code) + '</td>';
+      html += '<td style="padding:14px 16px;text-align:right"><span class="user-pill mint">' + r.successful_orders + '</span></td>';
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table></div>';
+    list.innerHTML = html;
+    
+  } catch(e){
+    list.innerHTML = '<div class="admin-empty">Backend not reachable.</div>';
+  }
+}
+
+/* ---------- Admin: Tuition Management ---------- */
+async function loadTuition(){
+  const tok = localStorage.getItem('keh_admin_token');
+  if(!tok){ $('#p-tuition').innerHTML = '<div class="admin-empty">Staff sign-in required.</div>'; return; }
+
+  $('#p-tuition').innerHTML = '<div class="admin-empty">Loading packages…</div>';
+  let packages = [];
+  try {
+    const r = await fetch('/api/admin/tuition/packages', { headers: {'X-Admin-Token': tok} });
+    if(r.ok){ const j = await r.json(); packages = j.packages || []; }
+  } catch(e){}
+
+  $('#p-tuition').innerHTML = `
+    <div class="admin-form" style="margin-top:0">
+      <div class="search-lbl" style="margin-bottom:16px">Create Tuition / Vault Package</div>
+      <div class="fld">
+        <label class="fld-l">Package Type</label>
+        <select class="fld-i" id="tp_tier">
+          <option value="study_plan">Study Plan (PDF / revision resource)</option>
+          <option value="recorded">Recorded Course (video lessons)</option>
+          <option value="live">Live Bootcamp (Zoom classes + recordings)</option>
+          <option value="vault">The Success Vault (Premium E-Book)</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label class="fld-l">Title</label>
+        <input class="fld-i" id="tp_title" placeholder="e.g. 48 Laws of Power">
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label class="fld-l">Price (KES)</label>
+          <input class="fld-i" id="tp_price" type="number" value="500">
+        </div>
+        <div class="fld">
+          <label class="fld-l">Subject / Category</label>
+          <input class="fld-i" id="tp_subject" placeholder="e.g. Personal Development">
+        </div>
+      </div>
+      <div class="fld">
+        <label class="fld-l">Description</label>
+        <input class="fld-i" id="tp_desc" placeholder="What does this include?">
+      </div>
+      <div style="border-top:1px solid var(--line);margin:16px 0;padding-top:16px">
+        <div class="search-lbl" style="color:var(--gold);margin-bottom:12px">Instructor / Author Details (Optional)</div>
+        <div class="fld">
+          <label class="fld-l">Name</label>
+          <input class="fld-i" id="tp_inst_name" placeholder="e.g. Robert Greene">
+        </div>
+      </div>
+      <button class="btn btn-gold btn-block" id="tp_save">Create Package</button>
+      <div id="tp_create_status" style="margin-top:12px"></div>
+    </div>
+
+    <div class="admin-form" style="margin-top:20px">
+      <div class="search-lbl" style="margin-bottom:16px">Existing Packages (${packages.length})</div>
+      <div id="tp_list">
+        ${packages.length ? packages.map(renderPackageRow).join('') : '<div class="admin-empty">No packages yet. Create one above.</div>'}
+      </div>
+    </div>
+  `;
+
+  $('#tp_tier').addEventListener('change', () => {
+    const prices = { study_plan: 500, recorded: 1500, live: 3000, vault: 250 };
+    $('#tp_price').value = prices[$('#tp_tier').value] || 500;
+  });
+
+  $('#tp_save').addEventListener('click', async () => {
+    const title = $('#tp_title').value.trim();
+    if(!title){ $('#tp_create_status').innerHTML = '<div class="fld-err">Title required</div>'; return; }
+    const body = {
+      title,
+      price_kes: parseInt($('#tp_price').value) || 500,
+      description: $('#tp_desc').value.trim(),
+      subject: $('#tp_subject').value.trim(),
+      tier: $('#tp_tier').value,
+      instructor_name: $('#tp_inst_name').value.trim(),
+    };
+    $('#tp_create_status').innerHTML = '<div class="fld-info">Creating…</div>';
+    try {
+      const r = await fetch('/api/admin/tuition/package', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-Admin-Token': tok},
+        body: JSON.stringify(body)
+      });
+      if(r.ok){ toast('Package created'); loadTuition(); }
+      else {
+        const j = await r.json().catch(() => ({}));
+        $('#tp_create_status').innerHTML = '<div class="fld-err">' + esc(j.error || 'Failed') + '</div>';
+      }
+    } catch(e){
+      $('#tp_create_status').innerHTML = '<div class="fld-err">Backend not reachable</div>';
+    }
+  });
+
+  document.querySelectorAll('[data-toggle-pkg]').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      if(ev.target.closest('[data-del-pkg]')) return;
+      togglePackageDetail(el.dataset.togglePkg);
+    });
+  });
+  document.querySelectorAll('[data-del-pkg]').forEach(el => {
+    el.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      if(!confirm('Delete this package and all its materials & classes?')) return;
+      try {
+        const r = await fetch('/api/admin/tuition/package/' + el.dataset.delPkg, {
+          method: 'DELETE', headers: {'X-Admin-Token': tok}
+        });
+        if(r.ok){ toast('Package deleted'); loadTuition(); }
+        else toast('Delete failed', 'err');
+      } catch(e){ toast('Backend not reachable', 'err'); }
+    });
+  });
+}
+
+function renderPackageRow(p){
+  const tierLabel = { study_plan: 'Study Plan', recorded: 'Recorded', live: 'LIVE', vault: 'VAULT' }[p.tier] || p.tier;
+  const tierClass = p.tier === 'live' || p.tier === 'vault' ? '' : 'blue';
+  const vcount = p.video_count || 0;
+  const ccount = p.class_count || 0;
+  return `
+    <div data-pkg-row="${esc(p.id)}" style="border:1px solid var(--line);border-radius:8px;margin-bottom:8px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none" data-toggle-pkg="${esc(p.id)}">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+            <span class="pk-badge ${tierClass}" style="padding:3px 8px;font-size:9px;margin:0">${esc(tierLabel)}</span>
+            <div style="font-family:var(--fh);font-size:14px;font-weight:600;color:#fff">${esc(p.title)}</div>
+          </div>
+          <div style="font-family:var(--fm);font-size:10.5px;color:var(--muted)">
+            KES ${p.price_kes} · ${vcount} material${vcount===1?'':'s'} · ${ccount} class${ccount===1?'':'es'}
+            ${p.instructor_name ? ' · ' + esc(p.instructor_name) : ''}
+          </div>
+        </div>
+        <div style="font-family:var(--fm);font-size:14px;color:var(--muted);flex-shrink:0" data-chevron="${esc(p.id)}">▸</div>
+        <button class="ad-btn danger" data-del-pkg="${esc(p.id)}" style="padding:4px 10px;font-size:11px;flex-shrink:0;margin-left:8px">Delete</button>
+      </div>
+    </div>
+  `;
+}
+
+async function togglePackageDetail(pkgId){
+  const existing = document.getElementById('pkg-detail-' + pkgId);
+  const chevron = document.querySelector('[data-chevron="' + pkgId + '"]');
+  if(existing){
+    existing.remove();
+    if(chevron) chevron.textContent = '▸';
+    return;
+  }
+  if(chevron) chevron.textContent = '▾';
+
+  const tok = localStorage.getItem('keh_admin_token');
+  let j;
+  try {
+    const r = await fetch('/api/admin/tuition/package/' + pkgId, { headers: {'X-Admin-Token': tok} });
+    j = await r.json();
+  } catch(e){ return; }
+
+  const detail = document.createElement('div');
+  detail.id = 'pkg-detail-' + pkgId;
+  detail.innerHTML = renderPackageDetail(j);
+  const row = document.querySelector('[data-pkg-row="' + pkgId + '"]');
+  if(row) row.after(detail);
+
+  wirePackageDetail(detail, pkgId);
+}
+
+function renderPackageDetail(j){
+  const videos = j.videos || [];
+  const classes = j.classes || [];
+
+  const videoRows = videos.length ? videos.map(v => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;margin-bottom:8px;gap:12px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;color:#fff;font-weight:500">${esc(v.title)}</div>
+        <div style="font-family:var(--fm);font-size:11px;color:var(--muted);margin-top:4px;word-break:break-all">
+          ${v.filename ? '📄 ' + esc(v.filename) : '🔗 ' + esc(v.video_url || '')}
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" style="color:#FCA5A5;border-color:rgba(220,38,38,.3)" data-del-video="${esc(v.id)}">Delete</button>
+    </div>
+  `).join('') : '<div style="font-size:13px;color:var(--muted);padding:8px 0">No materials uploaded yet.</div>';
+
+  const classRows = classes.length ? classes.map(c => {
+    const dt = new Date(c.start_time);
+    const dtStr = isNaN(dt) ? c.start_time : dt.toLocaleString();
+    return `
+    <div style="padding:12px 16px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;color:#fff;font-weight:600">${esc(c.title)}</div>
+          <div style="font-family:var(--fm);font-size:11px;color:var(--muted);margin-top:4px">
+            🕐 ${esc(dtStr)} · ${c.duration_mins || 60} min
+          </div>
+          <div style="font-family:var(--fm);font-size:11px;color:#93C5FD;margin-top:4px;word-break:break-all">
+            🔗 ${esc(c.zoom_link)}
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="color:#FCA5A5;border-color:rgba(220,38,38,.3)" data-del-class="${esc(c.id)}">Delete</button>
+      </div>
+    </div>
+    `;
+  }).join('') : '<div style="font-size:13px;color:var(--muted);padding:8px 0">No live classes scheduled yet.</div>';
+
+  return `
+    <div style="padding:20px;background:rgba(5,9,20,.6);border-left:2px solid var(--gold);border-bottom:1px solid var(--line)">
+      <div style="margin-bottom:24px">
+        <div class="search-lbl" style="color:var(--gold);margin-bottom:12px">📚 Materials / PDFs (${videos.length})</div>
+        ${videoRows}
+        <button class="btn btn-outline btn-sm" data-add-video="${esc(j.package.id)}" style="margin-top:8px">+ Upload PDF / Material</button>
+        <div data-video-form="${esc(j.package.id)}"></div>
+      </div>
+
+      <div>
+        <div class="search-lbl" style="color:var(--blue);margin-bottom:12px">🎥 Live Classes (${classes.length})</div>
+        ${classRows}
+        <button class="btn btn-outline btn-sm" data-add-class="${esc(j.package.id)}" style="margin-top:8px">+ Schedule Live Class</button>
+        <div data-class-form="${esc(j.package.id)}"></div>
+      </div>
+    </div>
+  `;
+}
+
+function wirePackageDetail(detail, pkgId){
+  const tok = localStorage.getItem('keh_admin_token');
+
+  detail.querySelectorAll('[data-del-video]').forEach(b => {
+    b.addEventListener('click', async () => {
+      if(!confirm('Delete this material?')) return;
+      try {
+        const r = await fetch('/api/admin/tuition/video/' + b.dataset.delVideo, {
+          method: 'DELETE', headers: {'X-Admin-Token': tok}
+        });
+        if(r.ok){ detail.remove(); togglePackageDetail(pkgId); }
+        else toast('Delete failed', 'err');
+      } catch(e){ toast('Backend not reachable', 'err'); }
+    });
+  });
+
+  detail.querySelectorAll('[data-del-class]').forEach(b => {
+    b.addEventListener('click', async () => {
+      if(!confirm('Delete this live class?')) return;
+      try {
+        const r = await fetch('/api/admin/tuition/class/' + b.dataset.delClass, {
+          method: 'DELETE', headers: {'X-Admin-Token': tok}
+        });
+        if(r.ok){ detail.remove(); togglePackageDetail(pkgId); }
+        else toast('Delete failed', 'err');
+      } catch(e){ toast('Backend not reachable', 'err'); }
+    });
+  });
+
+  const addVideoBtn = detail.querySelector('[data-add-video]');
+  if(addVideoBtn){
+    addVideoBtn.addEventListener('click', () => {
+      const slot = detail.querySelector('[data-video-form]');
+      if(slot.innerHTML){ slot.innerHTML = ''; return; }
+      slot.innerHTML = `
+        <div style="margin-top:12px;padding:20px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:8px">
+          <div class="fld">
+            <label class="fld-l">Material Title</label>
+            <input class="fld-i" data-av-title placeholder="e.g. 48 Laws of Power (PDF)">
+          </div>
+          <div class="fld">
+            <label class="fld-l">Upload File (PDF, MP4, etc.)</label>
+            <input class="fld-i" data-av-file type="file" accept=".pdf,.mp4,.webm,.mov,.zip,.py,.js,.txt,.doc,.docx" style="padding-top:10px">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn btn-gold" data-av-submit>Upload Material</button>
+            <button class="btn btn-outline" data-av-cancel>Cancel</button>
+          </div>
+          <div data-av-status style="margin-top:12px"></div>
+        </div>
+      `;
+      slot.querySelector('[data-av-cancel]').addEventListener('click', () => slot.innerHTML = '');
+      slot.querySelector('[data-av-submit]').addEventListener('click', async () => {
+        const title = slot.querySelector('[data-av-title]').value.trim();
+        const file = slot.querySelector('[data-av-file]').files[0];
+        const statusEl = slot.querySelector('[data-av-status]');
+        if(!title){ statusEl.innerHTML = '<div class="fld-err">Title required</div>'; return; }
+        if(!file){ statusEl.innerHTML = '<div class="fld-err">Please select a file to upload</div>'; return; }
+
+        const fd = new FormData();
+        fd.append('package_id', pkgId);
+        fd.append('title', title);
+        fd.append('file', file);
+
+        statusEl.innerHTML = '<div class="fld-info">Uploading... Please wait</div>';
+        try {
+          const r = await fetch('/api/admin/tuition/video', {
+            method: 'POST', headers: {'X-Admin-Token': tok}, body: fd
+          });
+          if(r.ok){ detail.remove(); togglePackageDetail(pkgId); }
+          else {
+            const j = await r.json().catch(() => ({}));
+            statusEl.innerHTML = '<div class="fld-err">' + esc(j.error || 'Upload failed') + '</div>';
+          }
+        } catch(e){ statusEl.innerHTML = '<div class="fld-err">Backend not reachable</div>'; }
+      });
+    });
+  }
+
+  const addClassBtn = detail.querySelector('[data-add-class]');
+  if(addClassBtn){
+    addClassBtn.addEventListener('click', () => {
+      const slot = detail.querySelector('[data-class-form]');
+      if(slot.innerHTML){ slot.innerHTML = ''; return; }
+
+      const now = new Date();
+      const daysAhead = ((6 - now.getDay() + 7) % 7) || 7;
+      const nextSat = new Date(now.getTime() + daysAhead * 86400000);
+      nextSat.setHours(10, 0, 0, 0);
+      const localVal = new Date(nextSat.getTime() - nextSat.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
+      slot.innerHTML = `
+        <div style="margin-top:12px;padding:20px;background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.25);border-radius:8px">
+          <div class="fld">
+            <label class="fld-l">Class Title</label>
+            <input class="fld-i" data-ac-title placeholder="e.g. Week 1 — Equations and Inequalities">
+          </div>
+          <div class="fld">
+            <label class="fld-l">Zoom / Google Meet Link</label>
+            <input class="fld-i" data-ac-link placeholder="https://zoom.us/j/123456789">
+          </div>
+          <div class="fld-row">
+            <div class="fld">
+              <label class="fld-l">Start Time (local)</label>
+              <input class="fld-i" data-ac-start type="datetime-local" value="${localVal}">
+            </div>
+            <div class="fld">
+              <label class="fld-l">Duration (min)</label>
+              <input class="fld-i" data-ac-dur type="number" value="60">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn btn-gold" data-ac-submit>Schedule Class</button>
+            <button class="btn btn-outline" data-ac-cancel>Cancel</button>
+          </div>
+          <div data-ac-status style="margin-top:12px"></div>
+        </div>
+      `;
+
+      slot.querySelector('[data-ac-cancel]').addEventListener('click', () => slot.innerHTML = '');
+      slot.querySelector('[data-ac-submit]').addEventListener('click', async () => {
+        const title = slot.querySelector('[data-ac-title]').value.trim();
+        const link = slot.querySelector('[data-ac-link]').value.trim();
+        const startLocal = slot.querySelector('[data-ac-start]').value;
+        const dur = parseInt(slot.querySelector('[data-ac-dur]').value) || 60;
+        const statusEl = slot.querySelector('[data-ac-status]');
+
+        if(!title){ statusEl.innerHTML = '<div class="fld-err">Title required</div>'; return; }
+        if(!link || !/^https?:\/\//.test(link)){ statusEl.innerHTML = '<div class="fld-err">Zoom link must start with http(s)://</div>'; return; }
+
+        statusEl.innerHTML = '<div class="fld-info">Scheduling…</div>';
+        try {
+          const r = await fetch('/api/admin/tuition/class', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-Admin-Token': tok},
+            body: JSON.stringify({ package_id: pkgId, title: title, zoom_link: link, start_time: new Date(startLocal).toISOString(), duration_mins: dur })
+          });
+          if(r.ok){ detail.remove(); togglePackageDetail(pkgId); }
+          else {
+            const j = await r.json().catch(() => ({}));
+            statusEl.innerHTML = '<div class="fld-err">' + esc(j.error || 'Failed to schedule') + '</div>';
+          }
+        } catch(e){ statusEl.innerHTML = '<div class="fld-err">Backend not reachable</div>'; }
+      });
+    });
+  }
+}
 
 /* ---------- Admin: settings ---------- */
 async function loadAdminSettings(){
@@ -2212,7 +2866,6 @@ $('#saveSettingsBtn')?.addEventListener('click', async () => {
     if(r.ok){
       $('#settingsStatus').innerHTML = '<div class="notice mint">✓ Settings saved</div>';
       State.adminSettings = j.settings || State.adminSettings;
-      // refresh public settings + products so prices/year update live
       await loadPublicSettings();
       await loadProducts();
       renderPriceTiers();
@@ -2299,178 +2952,344 @@ $('#addExamBtn')?.addEventListener('click', async () => {
   const short = $('#newExamShort').value.trim();
   const order = $('#newExamOrder').value.trim() || '50';
   if(!code || !label){ toast('Code and label are required', 'err'); return; }
-  const btn = $('#addExamBtn'); const orig = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Adding…';
-  try {
-    const r = await fetch(API + '/api/admin/exams', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': tok },
-      body: JSON.stringify({ code, label, short, sort_order: order })
-    });
-    const j = await r.json();
-    if(r.ok){
-      $('#newExamCode').value = '';
-      $('#newExamLabel').value = '';
-      $('#newExamShort').value = '';
-      $('#newExamOrder').value = '';
-      await loadAdminExams();
-      await loadPublicExams();
-      toast('Exam added');
-    } else toast(j.error || 'Could not add exam', 'err');
-  } catch(e){ toast('Backend not reachable', 'err'); }
-  finally { btn.disabled = false; btn.textContent = orig; }
+      // Continues from: if(!code || !label){ toast('Code and label are required', 'err'); return; }
+
+    try {
+        const r = await fetch(API + '/api/admin/exams', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Admin-Token': tok },
+            body: JSON.stringify({ code, label, short, sort_order: parseInt(order) })
+        });
+        const j = await r.json();
+        if(r.ok){
+            toast('Exam added successfully');
+            $('#newExamCode').value = '';
+            $('#newExamLabel').value = '';
+            $('#newExamShort').value = '';
+            $('#newExamOrder').value = '';
+            await loadAdminExams();
+            await loadPublicExams();
+        } else {
+            toast(j.error || 'Failed to add exam', 'err');
+        }
+    } catch(e){
+        toast('Backend not reachable', 'err');
+    }
 });
 
+/* ---------- Admin: Paper Upload & Management ---------- */
 
+function initAdminUpload() {
+    const upZone = $('#upZone');
+    const upFile = $('#upFile');
+    const upForm = $('#upForm');
 
-/* ---------- Admin: users ---------- */
-async function loadAdminUsers(){
-  const tok = localStorage.getItem('keh_admin_token');
-  const list  = $('#adminUsersList');
-  const stats = $('#adminUsersStats');
-  if(!list || !stats) return;
-  if(!tok){ list.innerHTML = '<div class="admin-empty">Sign in as staff to view users.</div>'; stats.innerHTML = ''; return; }
-  list.innerHTML = '<div class="admin-empty">Loading users…</div>';
-  try {
-    const r = await fetch(API + '/api/admin/users', { headers: {'X-Admin-Token': tok} });
-    if(!r.ok){ list.innerHTML = '<div class="admin-empty">Could not load users (check staff token).</div>'; stats.innerHTML = ''; return; }
-    const j = await r.json();
-    renderAdminUsersStats(j.users || []);
-    renderAdminUsersList(j.users || []);
-  } catch(e){
-    list.innerHTML = '<div class="admin-empty">Backend not reachable.</div>';
-    stats.innerHTML = '';
-  }
-}
+    if(!upZone || !upFile) return;
 
-function renderAdminUsersStats(users){
-  const total = users.length;
-  const paying = users.filter(u => (u.paid_orders || 0) > 0).length;
-  const revenue = users.reduce((s, u) => s + (u.total_paid || 0), 0);
-  $('#adminUsersStats').innerHTML =
-    '<div class="dash-stat"><div class="dash-stat-l">Total users</div><div class="dash-stat-v">' + total + '</div></div>' +
-    '<div class="dash-stat"><div class="dash-stat-l">Paying customers</div><div class="dash-stat-v gold">' + paying + '</div></div>' +
-    '<div class="dash-stat"><div class="dash-stat-l">Total revenue</div><div class="dash-stat-v gold">' + money(revenue) + '</div></div>';
-}
+    upZone.addEventListener('click', () => upFile.click());
 
-function renderAdminUsersList(users){
-  const list = $('#adminUsersList');
-  if(!users.length){ list.innerHTML = '<div class="admin-empty">No users registered yet.</div>'; return; }
-  list.innerHTML = users.map(u => {
-    const grants = (u.grants || []).length
-      ? u.grants.map(g => '<span class="user-pill mint">' +
-            esc(g.exam) + ' · ' + esc(g.year === '*' ? 'all years' : g.year) +
-          '</span>').join('')
-      : '<span class="user-pill">no access yet</span>';
-    const joined = u.created_at ? new Date(u.created_at).toLocaleDateString() : '—';
-    const paidOrders = u.paid_orders || 0;
-    return '<div class="user-row">' +
-      '<div class="user-avatar">' + esc(initials(u.name || u.email || '?')) + '</div>' +
-      '<div class="user-main">' +
-        '<div class="user-name">' + esc(u.name || '(no name)') + '</div>' +
-        '<div class="user-contact">' + esc(u.email || '') +
-          (u.phone ? ' · ' + esc(u.phone) : '') +
-          ' · joined ' + esc(joined) + '</div>' +
-        '<div class="user-meta">' +
-          '<span class="user-pill">' + paidOrders + ' paid order' + (paidOrders === 1 ? '' : 's') + '</span>' +
-          '<span class="user-pill gold">' + money(u.total_paid || 0) + '</span>' +
-          '<span class="user-pill">' + (u.grants_count || 0) + ' grant' + (u.grants_count === 1 ? '' : 's') + '</span>' +
-        '</div>' +
-        '<div class="user-grants">' + grants + '</div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-}
-
-async function loadAdminList(){ await loadPapers(); renderAdminList(); }
-function renderAdminList(){
-  const list = $('#adminList');
-  if(!State.papers.length){ list.innerHTML = '<div class="admin-empty">No papers uploaded yet.</div>'; return; }
-  list.innerHTML = State.papers.map(d =>
-    '<div class="admin-li"><div class="ico">PDF</div><div class="body">' +
-      '<div class="title">' + esc(d.title) + '</div>' +
-      '<div class="sub">' + esc(d.exam) + ' · ' + esc(d.year||'') + ' · ' + esc(d.subject||'') + ' · ' + typeLabel(d.type) + (d.premium ? ' · PREMIUM' : ' · FREE') + '</div>' +
-    '</div><button class="del" data-del="' + d.id + '">Delete</button></div>'
-  ).join('');
-  list.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => {
-    const tok = localStorage.getItem('keh_admin_token');
-    if(!tok){ toast('Staff sign-in required', 'err'); return; }
-    if(!confirm('Delete this paper?')) return;
-    try {
-      const r = await fetch(API + '/api/admin/papers/' + b.dataset.del, { method: 'DELETE', headers: {'X-Admin-Token': tok} });
-      if(r.ok){
-        toast('Deleted');
-        await loadPapers(); await loadProducts();
-        $('#sPapers').dataset.count = State.papers.length;
-        renderPriceTiers(); renderAdminList();
-      } else toast('Delete failed', 'err');
-    } catch(e){ toast('Backend not reachable', 'err'); }
-  }));
-}
-
-/* ---------- Resume pending checkout ---------- */
-async function resumePendingCheckout(){
-  const p = State.pendingCheckout;
-  if(!p || !p.checkout_id) return;
-  try {
-    const r = await fetch(API + '/api/checkout/' + p.checkout_id + '/verify', { method: 'POST' });
-    const j = await r.json();
-    if(j.status === 'completed'){
-      State.selectedProduct = p.product_id;
-      await refreshMe();
-      clearPendingCheckout();
-      showTicket();
-      return;
-    }
-    if(j.status === 'failed'){ clearPendingCheckout(); return; }
-    State.selectedProduct = p.product_id;
-    State.stkCheckoutId = p.checkout_id;
-    State.stkRealInProgress = true;
-    resetWaitingUI();
-    $('#waitRef').textContent = 'Ref: ' + p.checkout_id;
-    $('#waitText').innerHTML = 'Resuming your payment check.';
-    $('#waitCheckNow').style.display = 'block';
-    openModal('mWaiting');
-    pollStatus(p.checkout_id);
-  } catch(e){ clearPendingCheckout(); }
-}
-
-/* ---------- Init ---------- */
-async function init(){
-  renderFAQ();
-  renderNavAuth();
-  await loadPublicSettings();
-  await loadPublicExams();
-  await loadPapers();
-  await loadProducts();
-  if(State.jwt) await refreshMe();
-  $('#sPapers').dataset.count = State.papers.length;
-  renderPriceTiers();
-  renderPickList(null);
-
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if(e.isIntersecting){
-        const el = e.target;
-        if(!el.dataset.done){ el.dataset.done = '1'; animateCount(el); }
-        io.unobserve(el);
-      }
+    upZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        upZone.classList.add('drag');
     });
-  }, {threshold: .3});
-  $$('[data-count]').forEach(el => io.observe(el));
 
-  resumePendingCheckout();
-  checkResetHash();
+    upZone.addEventListener('dragleave', () => {
+        upZone.classList.remove('drag');
+    });
+
+    upZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        upZone.classList.remove('drag');
+        if(e.dataTransfer.files.length) {
+            upFile.files = e.dataTransfer.files;
+            handleFileSelect();
+        }
+    });
+
+    upFile.addEventListener('change', handleFileSelect);
+
+    function handleFileSelect() {
+        if(upFile.files.length) {
+            const f = upFile.files[0];
+            if(!f.name.toLowerCase().endsWith('.pdf')) {
+                toast('Only PDF files are accepted', 'err');
+                upFile.value = '';
+                return;
+            }
+            $('#upFileName').textContent = f.name;
+            $('#upFileSize').textContent = fmtSize(f.size);
+            upZone.classList.add('hide');
+            upForm.classList.remove('hide');
+
+            // Auto-fill title and year if empty
+            if(!$('#upTitle').value) {
+                $('#upTitle').value = f.name.replace('.pdf', '').replace(/_/g, ' ').replace(/-/g, ' ');
+            }
+            if(!$('#upYear').value) {
+                const yearMatch = f.name.match(/20\d{2}/);
+                $('#upYear').value = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
+            }
+        }
+    }
+
+    $('#upCancel')?.addEventListener('click', () => {
+        upFile.value = '';
+        upForm.classList.add('hide');
+        upZone.classList.remove('hide');
+        $('#upTitle').value = '';
+        $('#upHook').value = '';
+        $('#upSubject').value = '';
+        $('#upPaper').value = '';
+        $('#upYear').value = '';
+        $('#upPages').value = '';
+        $('#upStatus').innerHTML = '';
+    });
+
+    $('#upSubmit')?.addEventListener('click', async () => {
+        const tok = localStorage.getItem('keh_admin_token');
+        if(!tok) { toast('Staff sign-in required', 'err'); return; }
+        const file = upFile.files[0];
+        if(!file) return;
+
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('exam', $('#upExam').value);
+        fd.append('year', $('#upYear').value.trim());
+        fd.append('subject', $('#upSubject').value.trim());
+        fd.append('paper', $('#upPaper').value.trim());
+        fd.append('title', $('#upTitle').value.trim());
+        fd.append('hook', $('#upHook').value.trim());
+        fd.append('type', $('#upType').value);
+        fd.append('premium', $('#upPremium').checked ? 'true' : 'false');
+
+        const btn = $('#upSubmit');
+        const orig = btn.textContent;
+        btn.disabled = true; btn.textContent = 'Uploading…';
+        $('#upStatus').innerHTML = '';
+
+        try {
+            const r = await fetch(API + '/api/admin/papers', {
+                method: 'POST',
+                headers: { 'X-Admin-Token': tok },
+                body: fd
+            });
+            const j = await r.json();
+            if(r.ok) {
+                $('#upStatus').innerHTML = '<div class="notice mint">✓ Uploaded successfully</div>';
+                setTimeout(() => {
+                    $('#upCancel').click();
+                    loadAdminList();
+                    loadPapers(); // Refresh the global state
+                }, 1500);
+            } else {
+                $('#upStatus').innerHTML = '<div class="notice amber">' + esc(j.error || 'Upload failed') + '</div>';
+            }
+        } catch(e) {
+            $('#upStatus').innerHTML = '<div class="notice amber">Backend not reachable</div>';
+        } finally {
+            btn.disabled = false; btn.textContent = orig;
+        }
+    });
 }
+
+async function loadAdminList() {
+    const tok = localStorage.getItem('keh_admin_token');
+    const list = $('#adminList');
+    if(!list) return;
+    if(!tok) { list.innerHTML = '<div class="admin-empty">Staff sign-in required.</div>'; return; }
+
+    list.innerHTML = '<div class="admin-empty">Loading papers…</div>';
+    try {
+        const r = await fetch(API + '/api/papers');
+        if(!r.ok) throw 0;
+        const j = await r.json();
+
+        if(!j.papers.length) {
+            list.innerHTML = '<div class="admin-empty">No papers uploaded yet.</div>';
+            return;
+        }
+
+        list.innerHTML = j.papers.map(p => `
+            <div class="admin-li">
+                <div class="ico">PDF</div>
+                <div class="body">
+                    <div class="title">${esc(p.title)}</div>
+                    <div class="sub">${esc(p.exam)} · ${esc(p.year || '')} · ${esc(p.subject || '')} · ${esc(p.type)}</div>
+                </div>
+                <button class="del" onclick="deletePaper('${p.id}')">Delete</button>
+            </div>
+        `).join('');
+    } catch(e) {
+        list.innerHTML = '<div class="admin-empty">Backend not reachable.</div>';
+    }
+}
+
+window.deletePaper = async function(paperId) {
+    if(!confirm('Delete this paper permanently?')) return;
+    const tok = localStorage.getItem('keh_admin_token');
+    try {
+        const r = await fetch(API + '/api/admin/papers/' + paperId, {
+            method: 'DELETE',
+            headers: {'X-Admin-Token': tok}
+        });
+        if(r.ok) {
+            toast('Paper deleted');
+            loadAdminList();
+            loadPapers();
+        } else {
+            toast('Delete failed', 'err');
+        }
+    } catch(e) {
+        toast('Backend not reachable', 'err');
+    }
+};
+
+async function loadAdminUsers() {
+    const tok = localStorage.getItem('keh_admin_token');
+    const list = $('#adminUsersList');
+    const stats = $('#adminUsersStats');
+    if(!list || !stats) return;
+    if(!tok) { list.innerHTML = '<div class="admin-empty">Staff sign-in required.</div>'; return; }
+
+    list.innerHTML = '<div class="admin-empty">Loading users…</div>';
+    try {
+        const r = await fetch(API + '/api/admin/users', { headers: {'X-Admin-Token': tok} });
+        if(!r.ok) {
+            list.innerHTML = '<div class="admin-empty">Could not load users.</div>';
+            return;
+        }
+        const j = await r.json();
+        const users = j.users || [];
+
+        let totalRevenue = 0;
+        let paying = 0;
+        users.forEach(u => {
+            if(u.total_paid > 0) paying++;
+            totalRevenue += u.total_paid;
+        });
+
+        stats.innerHTML = `
+            <div class="admin-form" style="margin:0;padding:20px 16px;text-align:center">
+                <div class="statbar-k">Total Users</div>
+                <div class="statbar-v">${users.length}</div>
+            </div>
+            <div class="admin-form" style="margin:0;padding:20px 16px;text-align:center">
+                <div class="statbar-k">Paying Customers</div>
+                <div class="statbar-v gold">${paying}</div>
+            </div>
+            <div class="admin-form" style="margin:0;padding:20px 16px;text-align:center">
+                <div class="statbar-k">Total Revenue</div>
+                <div class="statbar-v gold">KES ${fmt(totalRevenue)}</div>
+            </div>
+        `;
+
+        if(!users.length) {
+            list.innerHTML = '<div class="admin-empty">No users yet.</div>';
+            return;
+        }
+
+        list.innerHTML = users.map(u => {
+            const grantsHtml = u.grants.map(g => `<span class="user-pill mint">${esc(g.exam)} · ${esc(g.year)}</span>`).join('');
+            return `
+                <div class="user-row">
+                    <div class="user-avatar">${esc(initials(u.name))}</div>
+                    <div class="user-main">
+                        <div class="user-name">${esc(u.name)}</div>
+                        <div class="user-contact">${esc(u.email)} · ${esc(u.phone)}</div>
+                        <div class="user-meta">
+                            <span class="user-pill">${u.paid_orders} paid orders</span>
+                            <span class="user-pill gold">KES ${fmt(u.total_paid)}</span>
+                            <span class="user-pill">${u.pending_orders} pending</span>
+                            <span class="user-pill">${new Date(u.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div class="user-grants">
+                            ${grantsHtml || '<span class="user-pill" style="opacity:.5">No access yet</span>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch(e) {
+        list.innerHTML = '<div class="admin-empty">Backend not reachable.</div>';
+    }
+}
+
+/* ---------- Hosted Checkout Return ---------- */
+function handleHostedReturn() {
+    const params = new URLSearchParams(location.search);
+    if(params.get('hosted_return') === '1') {
+        const productId = params.get('product');
+        const ref = params.get('ref');
+
+        if(productId) {
+            State.selectedProduct = productId;
+            openModal('mWaiting');
+            $('#waitTitle').textContent = 'Verifying payment…';
+            $('#waitText').innerHTML = 'Please wait while we confirm your payment with the bank.';
+            $('#waitSpinner').style.display = 'block';
+
+            // Remove URL params
+            window.history.replaceState({}, document.title, location.pathname);
+
+            // Give the webhook a moment to process
+            setTimeout(async () => {
+                await refreshMe();
+                $('#waitSpinner').style.display = 'none';
+                $('#waitIcon').className = 'waiting-icon success';
+                $('#waitIcon').textContent = '✓';
+                $('#waitTitle').textContent = 'Payment Received!';
+                $('#waitText').innerHTML = 'Your access has been updated. Opening your library…';
+
+                setTimeout(() => {
+                    closeModals();
+                    showTicket();
+                }, 2000);
+            }, 3000);
+        }
+    }
+}
+
+/* ---------- Init Application ---------- */
+async function init() {
+    // 1. Load initial data
+    await Promise.all([
+        loadPublicSettings(),
+        loadPublicExams(),
+        loadProducts(),
+        loadPapers(),
+        loadTuitionPublic()
+    ]);
+
+    // 2. Render dynamic content
+    renderPriceTiers();
+    renderFAQ();
+    renderNavAuth();
+
+    // 3. Restore session if exists
+    if(State.jwt) {
+        await refreshMe();
+    }
+
+    // 4. Setup admin UI if currently on admin page
+    if(!$('#view-admin').classList.contains('hide')) {
+        initAdminUpload();
+        renderAdminView();
+    }
+
+    // 5. Handle hashes and return URLs
+    checkResetHash();
+    handleHostedReturn();
+
+    // 6. Check for pending checkouts (if user refreshed the page)
+    if(State.pendingCheckout) {
+        pollStatus(State.pendingCheckout.checkout_id);
+    }
+}
+
+// Start the app
 init();
 
-document.addEventListener('keydown', e => {
-  if(e.key === '/' && !e.target.matches('input, textarea')){
-    e.preventDefault();
-    $('#searchOv').classList.add('on');
-    setTimeout(() => $('#searchInput').focus(), 100);
-  }
-});
 </script>
 </body>
 </html>
+ 
