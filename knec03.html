@@ -1816,10 +1816,10 @@ function renderVaultView(){
   grid.innerHTML = books.map(p => {
     const owned = State.tuitionGrants.some(g => g.package_id === p.id);
 
-    // If cover_image_url exists, show the image
+        // Find this line inside renderVaultView
     const imageHtml = p.cover_image_url
       ? `<div style="width:100%; height:220px; border-radius:8px; overflow:hidden; margin-bottom:16px; border:1px solid var(--line2)">
-           <img src="${esc(p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;" alt="${esc(p.title)}">
+           <img src="${esc(p.cover_image_url.startsWith('http') ? p.cover_image_url : API + p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;" alt="${esc(p.title)}">
          </div>`
       : `<span class="pk-badge" style="background:linear-gradient(135deg,#D4AF6E,#B8935A);color:#000;margin-bottom:16px">SUCCESS VAULT</span>`;
 
@@ -2507,9 +2507,9 @@ async function loadTuition(){
       </div>
 
       <!-- ADD THIS NEW FIELD -->
-      <div class="fld">
-        <label class="fld-l">Book Cover Image URL (Optional)</label>
-        <input class="fld-i" id="tp_cover" placeholder="e.g. https://images-na.ssl-images-amazon.com/images/I/91bYsX41DVL.jpg">
+            <div class="fld">
+        <label class="fld-l">Upload Book Cover Image</label>
+        <input class="fld-i" id="tp_cover" type="file" accept="image/png, image/jpeg, image/jpg, image/webp" style="padding-top:10px">
       </div>
       
       <div style="border-top:1px solid var(--line);margin:16px 0;padding-top:16px">
@@ -2536,24 +2536,28 @@ async function loadTuition(){
     $('#tp_price').value = prices[$('#tp_tier').value] || 500;
   });
 
-  $('#tp_save').addEventListener('click', async () => {
+    $('#tp_save').addEventListener('click', async () => {
     const title = $('#tp_title').value.trim();
     if(!title){ $('#tp_create_status').innerHTML = '<div class="fld-err">Title required</div>'; return; }
-    const body = {
-      title,
-      price_kes: parseInt($('#tp_price').value) || 500,
-      description: $('#tp_desc').value.trim(),
-      subject: $('#tp_subject').value.trim(),
-      tier: $('#tp_tier').value,
-      instructor_name: $('#tp_inst_name').value.trim(),
-      cover_image_url: $('#tp_cover').value.trim() // <-- ADD THIS LINE
-    };
+
+    // Use FormData instead of JSON
+    const fd = new FormData();
+    fd.append('title', title);
+    fd.append('price_kes', parseInt($('#tp_price').value) || 500);
+    fd.append('description', $('#tp_desc').value.trim());
+    fd.append('subject', $('#tp_subject').value.trim());
+    fd.append('tier', $('#tp_tier').value);
+    fd.append('instructor_name', $('#tp_inst_name').value.trim());
+
+    const coverFile = $('#tp_cover').files[0];
+    if(coverFile) fd.append('cover_image', coverFile);
+
     $('#tp_create_status').innerHTML = '<div class="fld-info">Creating…</div>';
     try {
       const r = await fetch('/api/admin/tuition/package', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json', 'X-Admin-Token': tok},
-        body: JSON.stringify(body)
+        headers: {'X-Admin-Token': tok}, // Remove 'Content-Type': 'application/json' so browser sets it automatically for FormData
+        body: fd
       });
       if(r.ok){ toast('Package created'); loadTuition(); }
       else {

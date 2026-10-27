@@ -1101,15 +1101,35 @@ def api_admin_tuition_list():
 @app.route('/api/admin/tuition/package', methods=['POST'])
 def api_admin_tuition_create():
     if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
-    d = request.get_json(silent=True) or {}
-    pkg_id = 'pkg-' + uuid.uuid4().hex[:8]
 
-    # Add cover_image_url here
+    # Change from JSON to FormData to handle files
+    title = request.form.get('title')
+    description = request.form.get('description')
+    subject = request.form.get('subject')
+    price_kes = int(request.form.get('price_kes', 0))
+    tier = request.form.get('tier', 'recorded')
+    instructor_name = request.form.get('instructor_name')
+    instructor_bio = request.form.get('instructor_bio')
+
+    cover_file = request.files.get('cover_image')
+    cover_url = None
+
+    if cover_file and cover_file.filename:
+        ext = os.path.splitext(cover_file.filename)[1].lower()
+        if ext in ['.jpg', '.jpeg', '.png', '.webp']:
+            # Create a covers directory if it doesn't exist
+            covers_dir = UPLOAD_DIR / 'covers'
+            covers_dir.mkdir(exist_ok=True)
+
+            filename = f"cover_{uuid.uuid4().hex[:8]}{ext}"
+            cover_file.save(covers_dir / filename)
+            # Save the relative API path
+            cover_url = f"/api/covers/{filename}"
+
+    pkg_id = 'pkg-' + uuid.uuid4().hex[:8]
     db().execute(
         '''INSERT INTO tuition_packages (id, title, description, subject, price_kes, tier, instructor_name, instructor_bio, cover_image_url, active, created_at) VALUES (?,?,?,?,?,?,?,?,?,1,?)''',
-        (pkg_id, d.get('title'), d.get('description'), d.get('subject'), int(d.get('price_kes', 0)),
-         d.get('tier', 'recorded'), d.get('instructor_name'), d.get('instructor_bio'), d.get('cover_image_url'),
-         now_iso()))
+        (pkg_id, title, description, subject, price_kes, tier, instructor_name, instructor_bio, cover_url, now_iso()))
     db().commit()
     return jsonify({'ok': True, 'id': pkg_id})
 
@@ -1180,6 +1200,14 @@ def api_admin_tuition_class_delete(cls_id):
     db().execute('DELETE FROM live_classes WHERE id=?', (cls_id,))
     db().commit()
     return jsonify({'ok': True})
+
+@app.route('/api/covers/<filename>')
+def serve_cover(filename):
+    covers_dir = UPLOAD_DIR / 'covers'
+    path = covers_dir / filename
+    if path.exists():
+        return send_file(path)
+    return jsonify({'error': 'image not found'}), 404
 
 # ── Boot ────────────────────────────────────────────────────
 if __name__ == '__main__':
