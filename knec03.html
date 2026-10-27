@@ -401,7 +401,41 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
     grid-template-columns: 1fr !important;
   }
 }
-
+/* Success Vault Category Grid */
+.vault-category-title {
+  font-family: var(--fh);
+  font-size: 20px;
+  color: #fff;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+  margin-top: 32px;
+}
+.vault-book-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+  gap: 16px;
+}
+@media(min-width: 600px) {
+  .vault-book-grid { grid-template-columns: repeat(3, 1fr); } /* 3 columns on tablets */
+}
+@media(min-width: 900px) {
+  .vault-book-grid { grid-template-columns: repeat(5, 1fr); } /* 5 columns on laptops */
+}
+.vault-book-cover {
+  width: 100%;
+  aspect-ratio: 2/3;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  border: 1px solid var(--line2);
+  background: #000;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+.vault-book-cover:hover {
+  transform: scale(1.05);
+}
 }
 </style>
 </head>
@@ -1857,19 +1891,17 @@ function renderVaultView(){
 
   Object.entries(grouped).forEach(([category, catBooks]) => {
     html += `
-      <div style="margin-bottom:36px;">
-        <h3 style="font-family:var(--fh); font-size:20px; color:#fff; margin-bottom:16px; border-bottom:1px solid var(--line); padding-bottom:8px;">${esc(category)}</h3>
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:16px;">
+      <div>
+        <h3 class="vault-category-title">${esc(category)}</h3>
+        <div class="vault-book-grid">
           ${catBooks.map(p => {
             const imageHtml = p.cover_image_url
               ? `<img src="${esc(p.cover_image_url.startsWith('http') ? p.cover_image_url : API + p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;" alt="${esc(p.title)}">`
               : `<div style="background:linear-gradient(135deg,rgba(212,175,110,.2),rgba(0,0,0,.8)); height:100%; display:grid; place-items:center; padding:10px; text-align:center; font-size:11px; color:var(--gold);">${esc(p.title)}</div>`;
 
             return `
-              <div onclick="openBookDetail('${p.id}')" style="cursor:pointer; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                <div style="width:100%; aspect-ratio: 2/3; border-radius:6px; overflow:hidden; box-shadow:0 10px 20px rgba(0,0,0,0.5); border:1px solid var(--line2); background:#000;">
-                  ${imageHtml}
-                </div>
+              <div class="vault-book-cover" onclick="openBookDetail('${p.id}')">
+                ${imageHtml}
               </div>
             `;
           }).join('')}
