@@ -1813,37 +1813,38 @@ function renderVaultView(){
     grid.innerHTML = '<div class="admin-empty">The vault is currently locked. New books are added weekly.</div>';
     return;
   }
+
+  // Create a tight 2-column grid on mobile
+  grid.style.display = 'grid';
+  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))';
+  grid.style.gap = '14px';
+
   grid.innerHTML = books.map(p => {
     const owned = State.tuitionGrants.some(g => g.package_id === p.id);
 
-        // Find this line inside renderVaultView
+    // Use aspect-ratio for the book cover
     const imageHtml = p.cover_image_url
-      ? `<div style="width:100%; height:220px; border-radius:8px; overflow:hidden; margin-bottom:16px; border:1px solid var(--line2)">
+      ? `<div style="width:100%; aspect-ratio: 2/3; border-radius:8px; overflow:hidden; margin-bottom:12px; border:1px solid var(--line2); background:#000;">
            <img src="${esc(p.cover_image_url.startsWith('http') ? p.cover_image_url : API + p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;" alt="${esc(p.title)}">
          </div>`
-      : `<span class="pk-badge" style="background:linear-gradient(135deg,#D4AF6E,#B8935A);color:#000;margin-bottom:16px">SUCCESS VAULT</span>`;
+      : `<div style="width:100%; aspect-ratio: 2/3; border-radius:8px; margin-bottom:12px; background:linear-gradient(135deg,rgba(212,175,110,.2),rgba(0,0,0,.8)); display:grid; place-items:center; border:1px solid var(--line2)">
+           <span style="font-size:30px">📚</span>
+         </div>`;
 
     return `
-    <div class="pk" style="border-color:rgba(212,175,110,.4); background:linear-gradient(180deg,rgba(212,175,110,.08),rgba(255,255,255,.02)); display:flex; flex-direction:column;">
+    <div style="background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; display:flex; flex-direction:column; transition:0.3s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--line)'">
       ${imageHtml}
-      <h3 style="color:var(--gold); font-size:20px; line-height:1.2; margin-bottom:8px;">${esc(p.title)}</h3>
-      <div class="pk-desc" style="flex:1;">${esc(p.description)}</div>
 
-      <div class="pk-price" style="margin-top:16px;">
-        <small>KES</small><b style="color:var(--gold)">${p.price_kes}</b>
+      <h3 style="color:#fff; font-family:var(--fh); font-size:15px; line-height:1.2; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(p.title)}</h3>
+
+      <div style="font-family:var(--fh); font-size:18px; font-weight:600; color:var(--gold); margin-bottom:12px; margin-top:auto;">
+        <small style="font-size:10px; color:var(--muted);">KES</small> ${p.price_kes}
       </div>
 
-      <div class="pk-div" style="background:rgba(212,175,110,.2)"></div>
-
-      <ul class="pk-list" style="margin-bottom:16px;">
-        <li>Instant PDF Download</li>
-        <li>Lifetime access</li>
-      </ul>
-
       ${owned
-        ? `<button class="btn btn-gold btn-block" onclick="downloadVaultBook('${p.id}')">📥 Download E-Book Now</button>`
-        : `<button class="btn btn-outline btn-block" style="margin-bottom:10px" onclick="previewVaultBook('${p.id}')">👁️ Read Preview</button>
-           <button class="btn btn-gold btn-block" onclick="openTuitionCheckout('${p.id}')">Unlock E-Book</button>`
+        ? `<button class="btn btn-gold btn-sm" style="width:100%; padding:8px 0; font-size:12px;" onclick="downloadVaultBook('${p.id}')">📥 Download</button>`
+        : `<button class="btn btn-outline btn-sm" style="width:100%; padding:8px 0; font-size:12px; margin-bottom:6px;" onclick="previewVaultBook('${p.id}')">Preview</button>
+           <button class="btn btn-gold btn-sm" style="width:100%; padding:8px 0; font-size:12px;" onclick="openTuitionCheckout('${p.id}')">Unlock</button>`
       }
     </div>
   `}).join('');
