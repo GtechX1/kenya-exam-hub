@@ -389,6 +389,19 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
   .hero p.lede{font-size:16px}
   .sec-head{flex-direction:column;align-items:flex-start;gap:16px;margin-bottom:32px}
   .foot-cta{padding:64px 0}
+
+/* Force Success Vault to 2 columns on mobile */
+#vaultGrid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 12px !important;
+}
+@media(max-width: 350px) {
+  #vaultGrid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 }
 </style>
 </head>
@@ -1814,37 +1827,32 @@ function renderVaultView(){
     return;
   }
 
-  // Create a tight 2-column grid on mobile
-  grid.style.display = 'grid';
-  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))';
-  grid.style.gap = '14px';
-
   grid.innerHTML = books.map(p => {
     const owned = State.tuitionGrants.some(g => g.package_id === p.id);
 
-    // Use aspect-ratio for the book cover
+    // Book cover wrapper
     const imageHtml = p.cover_image_url
-      ? `<div style="width:100%; aspect-ratio: 2/3; border-radius:8px; overflow:hidden; margin-bottom:12px; border:1px solid var(--line2); background:#000;">
+      ? `<div style="width:100%; aspect-ratio: 2/3; border-radius:6px; overflow:hidden; margin-bottom:10px; border:1px solid var(--line2); background:#000;">
            <img src="${esc(p.cover_image_url.startsWith('http') ? p.cover_image_url : API + p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;" alt="${esc(p.title)}">
          </div>`
-      : `<div style="width:100%; aspect-ratio: 2/3; border-radius:8px; margin-bottom:12px; background:linear-gradient(135deg,rgba(212,175,110,.2),rgba(0,0,0,.8)); display:grid; place-items:center; border:1px solid var(--line2)">
-           <span style="font-size:30px">📚</span>
+      : `<div style="width:100%; aspect-ratio: 2/3; border-radius:6px; margin-bottom:10px; background:linear-gradient(135deg,rgba(212,175,110,.2),rgba(0,0,0,.8)); display:grid; place-items:center; border:1px solid var(--line2)">
+           <span style="font-size:24px">📚</span>
          </div>`;
 
     return `
-    <div style="background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; display:flex; flex-direction:column; transition:0.3s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--line)'">
+    <div style="background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px; display:flex; flex-direction:column; transition:0.3s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--line)'">
       ${imageHtml}
 
-      <h3 style="color:#fff; font-family:var(--fh); font-size:15px; line-height:1.2; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(p.title)}</h3>
+      <h3 style="color:#fff; font-family:var(--fh); font-size:14px; line-height:1.2; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(p.title)}</h3>
 
-      <div style="font-family:var(--fh); font-size:18px; font-weight:600; color:var(--gold); margin-bottom:12px; margin-top:auto;">
-        <small style="font-size:10px; color:var(--muted);">KES</small> ${p.price_kes}
+      <div style="font-family:var(--fh); font-size:16px; font-weight:600; color:var(--gold); margin-bottom:10px; margin-top:auto;">
+        <small style="font-size:9px; color:var(--muted);">KES</small> ${p.price_kes}
       </div>
 
       ${owned
-        ? `<button class="btn btn-gold btn-sm" style="width:100%; padding:8px 0; font-size:12px;" onclick="downloadVaultBook('${p.id}')">📥 Download</button>`
-        : `<button class="btn btn-outline btn-sm" style="width:100%; padding:8px 0; font-size:12px; margin-bottom:6px;" onclick="previewVaultBook('${p.id}')">Preview</button>
-           <button class="btn btn-gold btn-sm" style="width:100%; padding:8px 0; font-size:12px;" onclick="openTuitionCheckout('${p.id}')">Unlock</button>`
+        ? `<button class="btn btn-gold btn-sm" style="width:100%; padding:6px 0; font-size:11px;" onclick="downloadVaultBook('${p.id}')">📥 Download</button>`
+        : `<button class="btn btn-outline btn-sm" style="width:100%; padding:6px 0; font-size:11px; margin-bottom:4px;" onclick="previewVaultBook('${p.id}')">Preview</button>
+           <button class="btn btn-gold btn-sm" style="width:100%; padding:6px 0; font-size:11px;" onclick="openTuitionCheckout('${p.id}')">Unlock</button>`
       }
     </div>
   `}).join('');
