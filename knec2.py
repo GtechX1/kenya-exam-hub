@@ -209,6 +209,11 @@ def migrate_db():
         if 'password_hash' not in cols:
             conn.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
             log.info('migrated: users.password_hash')
+            
+        cols = [r[1] for r in conn.execute("PRAGMA table_info(tuition_packages)").fetchall()]
+        if 'cover_image_url' not in cols:
+            conn.execute("ALTER TABLE tuition_packages ADD COLUMN cover_image_url TEXT")
+            log.info('migrated: tuition_packages.cover_image_url')
 
         ocols = [r[1] for r in conn.execute("PRAGMA table_info(orders)").fetchall()]
         if 'product_id' not in ocols:
@@ -711,7 +716,7 @@ def api_paper_file(paper_id):
 
 @app.route('/api/tuition/packages')
 def api_tuition_packages():
-    rows = db().execute('SELECT id, title, description, subject, price_kes, tier, instructor_name, instructor_bio FROM tuition_packages WHERE active=1 ORDER BY created_at DESC').fetchall()
+    rows = db().execute('SELECT id, title, description, subject, price_kes, tier, instructor_name, instructor_bio, cover_image_url FROM tuition_packages WHERE active=1 ORDER BY created_at DESC').fetchall()
     return jsonify({'packages': [dict(r) for r in rows]})
 
 
@@ -1092,12 +1097,19 @@ def api_admin_tuition_list():
     rows = db().execute('''SELECT p.*, (SELECT COUNT(*) FROM tuition_videos v WHERE v.package_id = p.id) AS video_count, (SELECT COUNT(*) FROM live_classes c WHERE c.package_id = p.id) AS class_count FROM tuition_packages p ORDER BY p.created_at DESC''').fetchall()
     return jsonify({'packages': [dict(r) for r in rows]})
 
+
 @app.route('/api/admin/tuition/package', methods=['POST'])
 def api_admin_tuition_create():
     if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
     d = request.get_json(silent=True) or {}
     pkg_id = 'pkg-' + uuid.uuid4().hex[:8]
-    db().execute('''INSERT INTO tuition_packages (id, title, description, subject, price_kes, tier, instructor_name, instructor_bio, active, created_at) VALUES (?,?,?,?,?,?,?,?,1,?)''', (pkg_id, d.get('title'), d.get('description'), d.get('subject'), int(d.get('price_kes', 0)), d.get('tier', 'recorded'), d.get('instructor_name'), d.get('instructor_bio'), now_iso()))
+
+    # Add cover_image_url here
+    db().execute(
+        '''INSERT INTO tuition_packages (id, title, description, subject, price_kes, tier, instructor_name, instructor_bio, cover_image_url, active, created_at) VALUES (?,?,?,?,?,?,?,?,?,1,?)''',
+        (pkg_id, d.get('title'), d.get('description'), d.get('subject'), int(d.get('price_kes', 0)),
+         d.get('tier', 'recorded'), d.get('instructor_name'), d.get('instructor_bio'), d.get('cover_image_url'),
+         now_iso()))
     db().commit()
     return jsonify({'ok': True, 'id': pkg_id})
 

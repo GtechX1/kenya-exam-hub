@@ -1814,23 +1814,32 @@ function renderVaultView(){
     return;
   }
   grid.innerHTML = books.map(p => {
-    // Check if the user owns this specific book
     const owned = State.tuitionGrants.some(g => g.package_id === p.id);
 
+    // If cover_image_url exists, show the image
+    const imageHtml = p.cover_image_url
+      ? `<div style="width:100%; height:220px; border-radius:8px; overflow:hidden; margin-bottom:16px; border:1px solid var(--line2)">
+           <img src="${esc(p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;" alt="${esc(p.title)}">
+         </div>`
+      : `<span class="pk-badge" style="background:linear-gradient(135deg,#D4AF6E,#B8935A);color:#000;margin-bottom:16px">SUCCESS VAULT</span>`;
+
     return `
-    <div class="pk" style="border-color:rgba(212,175,110,.4); background:linear-gradient(180deg,rgba(212,175,110,.08),rgba(255,255,255,.02))">
-      <span class="pk-badge" style="background:linear-gradient(135deg,#D4AF6E,#B8935A);color:#000">SUCCESS VAULT</span>
-      <h3 style="color:var(--gold)">${esc(p.title)}</h3>
-      <div class="pk-desc">${esc(p.description)}</div>
-      <div class="pk-price" style="margin-top:auto">
+    <div class="pk" style="border-color:rgba(212,175,110,.4); background:linear-gradient(180deg,rgba(212,175,110,.08),rgba(255,255,255,.02)); display:flex; flex-direction:column;">
+      ${imageHtml}
+      <h3 style="color:var(--gold); font-size:20px; line-height:1.2; margin-bottom:8px;">${esc(p.title)}</h3>
+      <div class="pk-desc" style="flex:1;">${esc(p.description)}</div>
+
+      <div class="pk-price" style="margin-top:16px;">
         <small>KES</small><b style="color:var(--gold)">${p.price_kes}</b>
       </div>
+
       <div class="pk-div" style="background:rgba(212,175,110,.2)"></div>
-      <ul class="pk-list">
+
+      <ul class="pk-list" style="margin-bottom:16px;">
         <li>Instant PDF Download</li>
         <li>Lifetime access</li>
-        <li>Read on any device</li>
       </ul>
+
       ${owned
         ? `<button class="btn btn-gold btn-block" onclick="downloadVaultBook('${p.id}')">📥 Download E-Book Now</button>`
         : `<button class="btn btn-outline btn-block" style="margin-bottom:10px" onclick="previewVaultBook('${p.id}')">👁️ Read Preview</button>
@@ -2492,10 +2501,17 @@ async function loadTuition(){
           <input class="fld-i" id="tp_subject" placeholder="e.g. Personal Development">
         </div>
       </div>
-      <div class="fld">
+            <div class="fld">
         <label class="fld-l">Description</label>
         <input class="fld-i" id="tp_desc" placeholder="What does this include?">
       </div>
+
+      <!-- ADD THIS NEW FIELD -->
+      <div class="fld">
+        <label class="fld-l">Book Cover Image URL (Optional)</label>
+        <input class="fld-i" id="tp_cover" placeholder="e.g. https://images-na.ssl-images-amazon.com/images/I/91bYsX41DVL.jpg">
+      </div>
+      
       <div style="border-top:1px solid var(--line);margin:16px 0;padding-top:16px">
         <div class="search-lbl" style="color:var(--gold);margin-bottom:12px">Instructor / Author Details (Optional)</div>
         <div class="fld">
@@ -2530,6 +2546,7 @@ async function loadTuition(){
       subject: $('#tp_subject').value.trim(),
       tier: $('#tp_tier').value,
       instructor_name: $('#tp_inst_name').value.trim(),
+      cover_image_url: $('#tp_cover').value.trim() // <-- ADD THIS LINE
     };
     $('#tp_create_status').innerHTML = '<div class="fld-info">Creating…</div>';
     try {
