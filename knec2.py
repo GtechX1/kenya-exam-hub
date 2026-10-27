@@ -925,7 +925,7 @@ def api_restore():
 # ═══════════════════════════════════════════════════════════
 #  ADMIN
 # ═══════════════════════════════════════════════════════════
-ALLOWED_TYPES = {'past', 'scheme', 'mocks', 'predicted', 'revision'}
+ALLOWED_TYPES = {'past', 'scheme', 'mocks', 'predicted', 'revision', 'leakage'}
 
 @app.route('/api/admin/papers', methods=['POST'])
 def api_admin_upload():

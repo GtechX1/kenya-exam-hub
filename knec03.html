@@ -896,6 +896,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
                 <option value="scheme">Marking Scheme</option>
                 <option value="mocks">Mock</option>
                 <option value="predicted">Predicted 2026</option>
+                <option value="leakage">Leakage 2026</option>
                 <option value="revision">Revision</option>
               </select>
             </div>
@@ -1749,7 +1750,7 @@ async function loadProducts(){
 
 /* ---------- Paper cards ---------- */
 function typeLabel(t){
-  return ({past:'Past Paper', scheme:'Marking Scheme', mocks:'Mock', predicted:'Predicted 2026', revision:'Revision'})[t] || 'Document';
+  return ({past:'Past Paper', scheme:'Marking Scheme', mocks:'Mock', predicted:'Predicted 2026', leakage:'Leakage 2026', revision:'Revision'})[t] || 'Document';
 }
 function paperCard(p){
   const unlocked = hasAccess(p.exam, p.year);
