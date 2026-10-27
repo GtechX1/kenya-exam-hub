@@ -1102,14 +1102,12 @@ def api_admin_tuition_list():
 def api_admin_tuition_create():
     if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
 
-    # Change from JSON to FormData to handle files
     title = request.form.get('title')
     description = request.form.get('description')
     subject = request.form.get('subject')
     price_kes = int(request.form.get('price_kes', 0))
     tier = request.form.get('tier', 'recorded')
     instructor_name = request.form.get('instructor_name')
-    instructor_bio = request.form.get('instructor_bio')
 
     cover_file = request.files.get('cover_image')
     cover_url = None
@@ -1117,19 +1115,16 @@ def api_admin_tuition_create():
     if cover_file and cover_file.filename:
         ext = os.path.splitext(cover_file.filename)[1].lower()
         if ext in ['.jpg', '.jpeg', '.png', '.webp']:
-            # Create a covers directory if it doesn't exist
             covers_dir = UPLOAD_DIR / 'covers'
             covers_dir.mkdir(exist_ok=True)
-
             filename = f"cover_{uuid.uuid4().hex[:8]}{ext}"
             cover_file.save(covers_dir / filename)
-            # Save the relative API path
             cover_url = f"/api/covers/{filename}"
 
     pkg_id = 'pkg-' + uuid.uuid4().hex[:8]
     db().execute(
-        '''INSERT INTO tuition_packages (id, title, description, subject, price_kes, tier, instructor_name, instructor_bio, cover_image_url, active, created_at) VALUES (?,?,?,?,?,?,?,?,?,1,?)''',
-        (pkg_id, title, description, subject, price_kes, tier, instructor_name, instructor_bio, cover_url, now_iso()))
+        '''INSERT INTO tuition_packages (id, title, description, subject, price_kes, tier, instructor_name, cover_image_url, active, created_at) VALUES (?,?,?,?,?,?,?,?,1,?)''',
+        (pkg_id, title, description, subject, price_kes, tier, instructor_name, cover_url, now_iso()))
     db().commit()
     return jsonify({'ok': True, 'id': pkg_id})
 

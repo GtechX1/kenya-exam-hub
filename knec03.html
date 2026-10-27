@@ -2417,6 +2417,9 @@ function renderAdminView(){
       toast('Signed out of staff');
     }
   });
+
+  initAdminUpload(); // <-- ADD THIS LINE HERE
+
   loadAdminList();
   loadAdminUsers();
   loadAdminReferrals();
@@ -3000,8 +3003,13 @@ $('#addExamBtn')?.addEventListener('click', async () => {
 
 /* ---------- Admin: Paper Upload & Management ---------- */
 
+let adminUploadInited = false; // <-- ADD THIS LINE
 function initAdminUpload() {
+    if (adminUploadInited) return; // <-- ADD THIS LINE
+    adminUploadInited = true;       // <-- ADD THIS LINE
+
     const upZone = $('#upZone');
+    // ... rest of the function stays the same
     const upFile = $('#upFile');
     const upForm = $('#upForm');
 
