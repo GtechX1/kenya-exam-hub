@@ -1119,6 +1119,23 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
   </div>
 </div>
 
+<!-- BOOK DETAILS MODAL -->
+<div class="modal" id="mBookDetail">
+  <div class="modal-box" style="max-width:400px;">
+    <button class="modal-x" data-close>×</button>
+    <div id="bookDetailImage" style="width:100%; aspect-ratio:2/3; border-radius:12px; overflow:hidden; margin-bottom:20px; border:1px solid var(--line2)"></div>
+    <div class="modal-h" id="bookDetailTitle" style="margin-bottom:6px"></div>
+    <div class="modal-sub" id="bookDetailDesc" style="text-align:left; margin-bottom:20px; padding:0 10px;"></div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--goldS); border:1px solid rgba(212,175,110,.3); padding:16px; border-radius:12px; margin-bottom:20px;">
+      <span style="font-family:var(--fm); font-size:11px; letter-spacing:.1em; color:var(--ink2);">PRICE</span>
+      <span style="font-family:var(--fh); font-size:24px; font-weight:600; color:var(--gold);" id="bookDetailPrice"></span>
+    </div>
+
+    <div id="bookDetailActions"></div>
+  </div>
+</div>
+
 <div class="search-ov" id="searchOv">
   <div class="search-top">
     <svg class="search-ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -1822,41 +1839,75 @@ function renderPapersView(){
 function renderVaultView(){
   const grid = $('#vaultGrid');
   const books = State.tuition.filter(p => p.tier === 'vault');
+
   if(!books.length){
     grid.innerHTML = '<div class="admin-empty">The vault is currently locked. New books are added weekly.</div>';
     return;
   }
 
-  grid.innerHTML = books.map(p => {
-    const owned = State.tuitionGrants.some(g => g.package_id === p.id);
+  // Group books by their "subject" category
+  const grouped = books.reduce((acc, book) => {
+    const cat = book.subject || 'General';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(book);
+    return acc;
+  }, {});
 
-    // Book cover wrapper
-    const imageHtml = p.cover_image_url
-      ? `<div style="width:100%; aspect-ratio: 2/3; border-radius:6px; overflow:hidden; margin-bottom:10px; border:1px solid var(--line2); background:#000;">
-           <img src="${esc(p.cover_image_url.startsWith('http') ? p.cover_image_url : API + p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;" alt="${esc(p.title)}">
-         </div>`
-      : `<div style="width:100%; aspect-ratio: 2/3; border-radius:6px; margin-bottom:10px; background:linear-gradient(135deg,rgba(212,175,110,.2),rgba(0,0,0,.8)); display:grid; place-items:center; border:1px solid var(--line2)">
-           <span style="font-size:24px">📚</span>
-         </div>`;
+  let html = '';
 
-    return `
-    <div style="background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px; display:flex; flex-direction:column; transition:0.3s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--line)'">
-      ${imageHtml}
+  Object.entries(grouped).forEach(([category, catBooks]) => {
+    html += `
+      <div style="margin-bottom:36px;">
+        <h3 style="font-family:var(--fh); font-size:20px; color:#fff; margin-bottom:16px; border-bottom:1px solid var(--line); padding-bottom:8px;">${esc(category)}</h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:16px;">
+          ${catBooks.map(p => {
+            const imageHtml = p.cover_image_url
+              ? `<img src="${esc(p.cover_image_url.startsWith('http') ? p.cover_image_url : API + p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;" alt="${esc(p.title)}">`
+              : `<div style="background:linear-gradient(135deg,rgba(212,175,110,.2),rgba(0,0,0,.8)); height:100%; display:grid; place-items:center; padding:10px; text-align:center; font-size:11px; color:var(--gold);">${esc(p.title)}</div>`;
 
-      <h3 style="color:#fff; font-family:var(--fh); font-size:14px; line-height:1.2; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(p.title)}</h3>
-
-      <div style="font-family:var(--fh); font-size:16px; font-weight:600; color:var(--gold); margin-bottom:10px; margin-top:auto;">
-        <small style="font-size:9px; color:var(--muted);">KES</small> ${p.price_kes}
+            return `
+              <div onclick="openBookDetail('${p.id}')" style="cursor:pointer; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="width:100%; aspect-ratio: 2/3; border-radius:6px; overflow:hidden; box-shadow:0 10px 20px rgba(0,0,0,0.5); border:1px solid var(--line2); background:#000;">
+                  ${imageHtml}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
       </div>
+    `;
+  });
 
-      ${owned
-        ? `<button class="btn btn-gold btn-sm" style="width:100%; padding:6px 0; font-size:11px;" onclick="downloadVaultBook('${p.id}')">📥 Download</button>`
-        : `<button class="btn btn-outline btn-sm" style="width:100%; padding:6px 0; font-size:11px; margin-bottom:4px;" onclick="previewVaultBook('${p.id}')">Preview</button>
-           <button class="btn btn-gold btn-sm" style="width:100%; padding:6px 0; font-size:11px;" onclick="openTuitionCheckout('${p.id}')">Unlock</button>`
-      }
-    </div>
-  `}).join('');
+  grid.innerHTML = html;
 }
+
+window.openBookDetail = function(pkgId) {
+  const p = State.tuition.find(x => x.id === pkgId);
+  if(!p) return;
+
+  const owned = State.tuitionGrants.some(g => g.package_id === p.id);
+
+  // Populate Modal
+  $('#bookDetailTitle').textContent = p.title;
+  $('#bookDetailDesc').textContent = p.description || 'No description available.';
+  $('#bookDetailPrice').textContent = money(p.price_kes);
+
+  $('#bookDetailImage').innerHTML = p.cover_image_url
+    ? `<img src="${esc(p.cover_image_url.startsWith('http') ? p.cover_image_url : API + p.cover_image_url)}" style="width:100%; height:100%; object-fit:cover;">`
+    : `<div style="background:linear-gradient(135deg,rgba(212,175,110,.2),rgba(0,0,0,.8)); height:100%; display:grid; place-items:center; color:var(--gold); font-size:40px;">📚</div>`;
+
+  // Buttons
+  if(owned) {
+    $('#bookDetailActions').innerHTML = `<button class="btn btn-gold btn-block" onclick="downloadVaultBook('${p.id}')">📥 Download E-Book Now</button>`;
+  } else {
+    $('#bookDetailActions').innerHTML = `
+      <button class="btn btn-outline btn-block" style="margin-bottom:10px;" onclick="previewVaultBook('${p.id}')">👁️ Read Preview</button>
+      <button class="btn btn-gold btn-block" onclick="openTuitionCheckout('${p.id}')">Unlock E-Book</button>
+    `;
+  }
+
+  openModal('mBookDetail');
+};
 
 /* ---------- Tuition view ---------- */
 function renderTuitionView(){
@@ -2509,9 +2560,9 @@ async function loadTuition(){
           <input class="fld-i" id="tp_price" type="number" value="500">
         </div>
         <div class="fld">
-          <label class="fld-l">Subject / Category</label>
-          <input class="fld-i" id="tp_subject" placeholder="e.g. Personal Development">
-        </div>
+          <label class="fld-l">Category (e.g. Productivity, Wealth, Discipline)</label>
+          <input class="fld-i" id="tp_subject" placeholder="Enter a category...">
+       </div>
       </div>
             <div class="fld">
         <label class="fld-l">Description</label>
