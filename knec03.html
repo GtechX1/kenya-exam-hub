@@ -2313,7 +2313,13 @@ async function pollStatus(checkoutId){
   let tries = 0;
   _pollTimer = setInterval(async () => {
     tries++;
-    if(tries > 90){ clearInterval(_pollTimer); _pollTimer = null; return; }
+    if(tries > 20){ // 20 tries * 3.5 seconds = 70 seconds.
+        clearInterval(_pollTimer); _pollTimer = null;
+        $('#waitSpinner').style.display = 'none';
+        $('#waitCheckNow').style.display = 'block'; // SHOW THE MANUAL BUTTON
+        $('#waitConnNotice').style.display = 'block'; // SHOW "HAVING TROUBLE?"
+        return;
+    }
     try {
       const r = await fetch(API + '/api/status/' + checkoutId);
       const j = await r.json();

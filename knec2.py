@@ -812,10 +812,17 @@ def api_checkout():
     conn.commit()
     return jsonify({'checkout_id': checkout_id, 'api_ref': api_ref, 'amount_kes': amount, 'product_id': product_id, 'label': product['label']})
 
+
 def _refresh_order(order):
-    if not order['invoice_id']: return order
     try:
-        r = intasend().collect.status(invoice_id=order['invoice_id'])
+        # Fallback to api_ref if invoice_id is missing
+        if order['invoice_id']:
+            r = intasend().collect.status(invoice_id=order['invoice_id'])
+        elif order['api_ref']:
+            r = intasend().collect.status(api_ref=order['api_ref'])
+        else:
+            return order
+
         state = parse_intasend_state(r)
         if state == 'COMPLETE':
             _mark_paid(order['id'], r)
