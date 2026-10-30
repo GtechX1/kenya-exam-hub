@@ -442,7 +442,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
   display: block;
 }
 
-  #bookDetailImage {
+#bookDetailImage {
   width: 100%;
   max-width: 180px; /* Keeps the book small so buttons fit on screen */
   margin: 0 auto 20px auto;
@@ -485,6 +485,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
       <li><a data-nav="papers" data-exam="KCSE">KCSE 2026</a></li>
       <li><a data-nav="papers" data-exam="KJSEA">KJSEA 2026</a></li>
       <li><a data-nav="papers" data-exam="KPSEA">KPSEA 2026</a></li>
+      <li><a data-nav="notes" style="color:var(--mint2);font-weight:600">Notes</a></li> <!-- ADD THIS -->
       <li><a data-nav="vault" style="color:var(--gold);font-weight:600">The Success Vault</a></li>
       <li><a data-nav="tuition">Tuition</a></li>
       <li><a data-nav="packages">Packages</a></li>
@@ -732,6 +733,20 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
       </div>
     </div>
     <div id="vaultGrid"></div>
+  </div>
+</section>
+
+<!-- NOTES VIEW -->
+<section id="view-notes" class="hide">
+  <div class="wrap" style="padding:48px 22px 96px">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <span class="sec-kick" style="color:var(--mint2)">Master the Content</span>
+        <h2 class="sec-h2">The <em>Notes Library.</em></h2>
+        <p class="sec-lede">Complete subject notes for every level. Master the content before you tackle the past papers. Download instantly after M-Pesa payment.</p>
+      </div>
+    </div>
+    <div id="notesGrid"></div>
   </div>
 </section>
 
@@ -1399,7 +1414,7 @@ window.addEventListener('popstate', () => {
 
 /* ---------- Router ---------- */
 function navigate(view, opts){
-  ['home','papers','admin','tuition','vault'].forEach(v => $('#view-' + v).classList.add('hide'));
+  ['home','papers','admin','tuition','vault','notes'].forEach(v => $('#view-' + v).classList.add('hide'));
   let scrollToId = null;
   if(view === 'packages'){ view = 'home'; scrollToId = 'packages'; }
 
@@ -1413,6 +1428,9 @@ function navigate(view, opts){
   } else if(view === 'tuition'){
     $('#view-tuition').classList.remove('hide');
     renderTuitionView();
+  } else if(view === 'notes'){ // ADD THIS BLOCK
+    $('#view-notes').classList.remove('hide');
+    renderNotesView();
   } else if(view === 'vault'){
     $('#view-vault').classList.remove('hide');
     renderVaultView();
@@ -1859,6 +1877,7 @@ function renderPaperFilters(){
     {id:'scheme', label:'Marking Schemes'},
     {id:'mocks', label:'Mocks'},
     {id:'predicted', label:'Predicted 2026'},
+    {id:'leakage', label:'Leakage 2026'}, // <-- ADD THIS
     {id:'revision', label:'Revision'}
   ];
   $('#paperFilters').innerHTML = types.map(t => {
@@ -1957,10 +1976,49 @@ window.openBookDetail = function(pkgId) {
   openModal('mBookDetail');
 };
 
+function renderNotesView(){
+  const grid = $('#notesGrid');
+  const notes = State.tuition.filter(p => p.tier === 'notes');
+
+  if(!notes.length){
+    grid.innerHTML = '<div class="admin-empty">Notes are being uploaded. Check back soon.</div>';
+    return;
+  }
+
+  // Group by Level (Form 1, Form 2, KPSEA etc)
+  const grouped = notes.reduce((acc, note) => {
+    const cat = note.subject || 'General';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(note);
+    return acc;
+  }, {});
+
+  let html = '';
+  Object.entries(grouped).forEach(([category, catNotes]) => {
+    html += `
+      <div style="margin-bottom: 32px;">
+        <h3 class="vault-category-title" style="color:var(--mint2)">${esc(category)}</h3>
+        <div class="vault-book-grid">
+          ${catNotes.map(p => {
+            return `
+              <div class="vault-book-cover" onclick="openBookDetail('${p.id}')" style="aspect-ratio: 4/5; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px; text-align:center; background:linear-gradient(135deg, rgba(16,185,129,.1), rgba(0,0,0,.8));">
+                 <div style="font-size:40px; margin-bottom:16px;">📚</div>
+                 <div style="font-family:var(--fh); font-size:16px; color:#fff; font-weight:600; margin-bottom:8px; line-height:1.2;">${esc(p.title)}</div>
+                 <div style="font-family:var(--fm); font-size:12px; color:var(--mint2);">KES ${p.price_kes}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  });
+  grid.innerHTML = html;
+}
+
 /* ---------- Tuition view ---------- */
 function renderTuitionView(){
   const grid = $('#tuitionGrid');
-  const courses = State.tuition.filter(p => p.tier !== 'vault');
+  const courses = State.tuition.filter(p => p.tier !== 'vault' && p.tier !== 'notes'); // <-- ADD '&& p.tier !== 'notes''
   if(!courses.length){
     grid.innerHTML = '<div class="admin-empty">No classes available yet. Check back soon.</div>';
     return;
@@ -2602,6 +2660,7 @@ async function loadTuition(){
           <option value="recorded">Recorded Course (video lessons)</option>
           <option value="live">Live Bootcamp (Zoom classes + recordings)</option>
           <option value="vault">The Success Vault (Premium E-Book)</option>
+          <option value="notes">Notes Bundle (Form 1, 2, 3, 4)</option> <!-- ADD THIS -->
         </select>
       </div>
       <div class="fld">
@@ -2708,7 +2767,7 @@ async function loadTuition(){
 }
 
 function renderPackageRow(p){
-  const tierLabel = { study_plan: 'Study Plan', recorded: 'Recorded', live: 'LIVE', vault: 'VAULT' }[p.tier] || p.tier;
+  const tierLabel = { study_plan: 'Study Plan', recorded: 'Recorded', live: 'LIVE', vault: 'VAULT', notes: 'NOTES' }[p.tier] || p.tier; // <-- ADD notes: 'NOTES'
   const tierClass = p.tier === 'live' || p.tier === 'vault' ? '' : 'blue';
   const vcount = p.video_count || 0;
   const ccount = p.class_count || 0;
