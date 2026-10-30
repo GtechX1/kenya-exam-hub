@@ -1993,20 +1993,14 @@ function renderTuitionView(){
   `}).join('');
 }
 window.previewVaultBook = async function(pkgId) {
-  // If not logged in, require auth first
-  if(!isLoggedIn()) {
-    requireAuth(() => window.previewVaultBook(pkgId));
-    return;
-  }
-
+  // Removed the isLoggedIn() check. Let anyone preview.
   const r = await fetch(API + '/api/tuition/package/' + pkgId, {
     headers: { 'Authorization': 'Bearer ' + State.jwt }
   });
   const j = await r.json();
 
   if (j.videos && j.videos.length > 0) {
-    const v = j.videos[0]; // Preview the first PDF in the pack
-    // This URL hits the Python route we updated, which serves the preview if unpaid
+    const v = j.videos[0];
     const src = API + '/api/tuition/video/' + v.id + '?t=' + encodeURIComponent(State.jwt);
     window.open(src, '_blank');
   } else {
@@ -2015,14 +2009,19 @@ window.previewVaultBook = async function(pkgId) {
 };
 
 window.openTuitionCheckout = function(pkgId) {
+  // If guest clicks unlock, close the book popup FIRST, then show login
+  if(!isLoggedIn()) {
+    closeModals(true);
+    requireAuth(() => window.openTuitionCheckout(pkgId));
+    return;
+  }
+
   State.selectedProduct = 'TUITION:' + pkgId;
-  requireAuth(() => {
-    const pkg = State.tuition.find(p => p.id === pkgId);
-    if (!pkg) return;
-    State.returnTo = captureReturn();
-    closeModals(true); // <-- ADD THIS LINE TO CLOSE THE BOOK DETAILS
-    openCheckout({ id: 'TUITION:' + pkgId, label: pkg.title, kes: pkg.price_kes });
-  });
+  const pkg = State.tuition.find(p => p.id === pkgId);
+  if (!pkg) return;
+  State.returnTo = captureReturn();
+  closeModals(true);
+  openCheckout({ id: 'TUITION:' + pkgId, label: pkg.title, kes: pkg.price_kes });
 };
 
 window.openTuitionPortal = async function(pkgId){
