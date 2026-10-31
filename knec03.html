@@ -950,6 +950,28 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.08;letter-spacin
       <div class="search-lbl" style="font-size:12px;margin-bottom:20px">Referral Codes</div>
       <div id="adminReferralsList"></div>
     </div>
+
+        <!-- MANUAL ACCESS OVERRIDE -->
+    <div id="adminManualGrantWrap" style="margin-top:52px; display:none;">
+      <div class="search-lbl" style="font-size:12px;margin-bottom:20px">Manual Access Override</div>
+      <div class="admin-form" style="margin-top:0; border: 1px solid var(--gold); box-shadow: 0 0 15px rgba(212,175,110,0.1);">
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">
+          Use this tool to manually unlock papers or books for a user if they have paid via M-Pesa but the platform hasn't updated automatically.
+        </p>
+        <div class="fld-row">
+          <div class="fld">
+            <label class="fld-l">Select User</label>
+            <select class="fld-i" id="grantUserId"></select>
+          </div>
+          <div class="fld">
+            <label class="fld-l">Select Product / Package</label>
+            <select class="fld-i" id="grantProductId"></select>
+          </div>
+        </div>
+        <button class="btn btn-gold btn-block" id="grantAccessBtn">Grant Access Now</button>
+        <div id="grantStatus" style="margin-top:12px"></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -2543,7 +2565,7 @@ function renderAdminView(){
   const tw = $('#adminTuitionWrap');
   const rw = $('#adminReferralsWrap');
 
-  if(!tok){
+    if(!tok){
     $('#adminTokenBox').innerHTML =
       '<div class="admin-token-box"><div><div class="l">Staff sign-in required</div>' +
       '<div class="v">Sign in via the footer\'s Staff link to unlock uploads.</div></div>' +
@@ -2554,6 +2576,9 @@ function renderAdminView(){
     if(rw) rw.style.display = 'none';
     const sw = $('#adminSettingsWrap'); if(sw) sw.style.display = 'none';
     const ew = $('#adminExamsWrap');    if(ew) ew.style.display = 'none';
+
+    const mg = $('#adminManualGrantWrap'); if(mg) mg.style.display = 'none'; // <-- ADD THIS LINE
+
     $('#adminStaffLogin').addEventListener('click', openStaff);
     return;
   }
@@ -2566,6 +2591,8 @@ function renderAdminView(){
   if(uw) uw.style.display = 'block';
   if(tw) tw.style.display = 'block';
   if(rw) rw.style.display = 'block';
+  const mg = $('#adminManualGrantWrap');
+  if(mg) mg.style.display = 'block'; // <-- ADD THIS LINE
 
   const dd = $('#upExam');
   if(dd && State.exams.length){
@@ -2595,6 +2622,7 @@ function renderAdminView(){
   loadAdminList();
   loadAdminUsers();
   loadAdminReferrals();
+  loadAdminGrantUI(); // <-- ADD THIS LINE
 }
 
 /* ---------- Admin: Referrals ---------- */
@@ -3448,6 +3476,78 @@ function handleHostedReturn() {
         }
     }
 }
+
+async function loadAdminGrantUI() {
+  const tok = localStorage.getItem('keh_admin_token');
+  if(!tok) return;
+
+  try {
+    // Load Users
+    const rUsers = await fetch(API + '/api/admin/users', { headers: {'X-Admin-Token': tok} });
+    const jUsers = await rUsers.json();
+    const uSelect = $('#grantUserId');
+    uSelect.innerHTML = '<option value="">-- Select User --</option>' +
+      jUsers.users.map(u => `<option value="${u.id}">${esc(u.name)} (${esc(u.phone)})</option>`).join('');
+
+    // Load Products (Exams + Tuition/Vault)
+    const rProds = await fetch(API + '/api/products');
+    const jProds = await rProds.json();
+    const pSelect = $('#grantProductId');
+
+    // Group into Exams and Packages for easier reading
+    const examProds = jProds.products.filter(p => !p.id.startsWith('TUITION:'));
+    const pkgProds = jProds.products.filter(p => p.id.startsWith('TUITION:'));
+
+    let optHtml = '<option value="">-- Select Product --</option>';
+    optHtml += '<optgroup label="Exam Papers">';
+    examProds.forEach(p => { optHtml += `<option value="${p.id}">${esc(p.label)}</option>`; });
+    optHtml += '</optgroup>';
+
+    optHtml += '<optgroup label="Vault / Tuition / Notes">';
+    pkgProds.forEach(p => { optHtml += `<option value="${p.id}">${esc(p.label)} - ${money(p.kes)}</option>`; });
+    optHtml += '</optgroup>';
+
+    pSelect.innerHTML = optHtml;
+  } catch(e) {
+    console.error('Failed to load grant UI data', e);
+  }
+}
+
+// Handle the Grant Button Click
+$('#grantAccessBtn')?.addEventListener('click', async () => {
+  const tok = localStorage.getItem('keh_admin_token');
+  const userId = $('#grantUserId').value;
+  const productId = $('#grantProductId').value;
+
+  if(!userId || !productId) {
+    $('#grantStatus').innerHTML = '<div class="fld-err">Select both a user and a product</div>';
+    return;
+  }
+
+  const btn = $('#grantAccessBtn');
+  btn.disabled = true; btn.textContent = 'Granting...';
+  $('#grantStatus').innerHTML = '<div class="fld-info">Processing override...</div>';
+
+  try {
+    const r = await fetch(API + '/api/admin/grant-access', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-Admin-Token': tok},
+      body: JSON.stringify({ user_id: parseInt(userId), product_id: productId })
+    });
+    const j = await r.json();
+
+    if(r.ok) {
+      $('#grantStatus').innerHTML = '<div class="fld-ok">✓ Access granted successfully! The user can now see the material.</div>';
+      loadAdminUsers(); // Refresh the user list below to show the new badge
+    } else {
+      $('#grantStatus').innerHTML = '<div class="fld-err">' + esc(j.error || 'Failed to grant access') + '</div>';
+    }
+  } catch(e) {
+    $('#grantStatus').innerHTML = '<div class="fld-err">Backend not reachable</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Grant Access Now';
+  }
+});
 
 /* ---------- Init Application ---------- */
 async function init() {

@@ -1005,6 +1005,36 @@ def api_admin_referrals():
     rows = db().execute('''SELECT referral_code, COUNT(*) AS successful_orders FROM orders WHERE status = 'completed' AND referral_code IS NOT NULL AND referral_code != '' GROUP BY referral_code ORDER BY successful_orders DESC''').fetchall()
     return jsonify({'referrals': [dict(r) for r in rows]})
 
+
+@app.route('/api/admin/grant-access', methods=['POST'])
+def api_admin_grant_access():
+    if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
+    d = request.get_json(silent=True) or {}
+    user_id = d.get('user_id')
+    product_id = d.get('product_id')
+
+    if not user_id or not product_id:
+        return jsonify({'error': 'user_id and product_id required'}), 400
+
+    conn = db()
+
+    # 1. Check if it's a Tuition / Vault / Notes package
+    if product_id.startswith('TUITION:'):
+        pkg_id = product_id.split(':')[1]
+        conn.execute('INSERT OR IGNORE INTO tuition_grants (user_id, package_id, unlocked_at) VALUES (?,?,?)',
+                     (user_id, pkg_id, now_iso()))
+        log.info('MANUAL GRANT: tuition user=%s package=%s', user_id, pkg_id)
+    else:
+        # 2. It's an Exam product (e.g., KCSE:2024, MEGA)
+        product = get_product(conn, product_id)
+        if not product:
+            return jsonify({'error': 'invalid product id'}), 400
+        _insert_grant(conn, user_id, product)
+        log.info('MANUAL GRANT: exam user=%s product=%s', user_id, product['id'])
+
+    conn.commit()
+    return jsonify({'ok': True})
+
 @app.route('/api/admin/orders')
 def api_admin_orders():
     if not admin_ok(): return jsonify({'error': 'admin token required'}), 403
